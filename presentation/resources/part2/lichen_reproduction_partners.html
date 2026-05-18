@@ -1,0 +1,307 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.25rem 1rem 1.5rem;font-family:var(--font-sans)}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px 0;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);font-size:13px;font-weight:400;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-primary)}
+.panel{display:none;gap:16px;flex-direction:column}
+.panel.active{display:flex}
+canvas{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);width:100%;display:block}
+.legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary)}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.caption{font-size:13px;color:var(--color-text-secondary);line-height:1.6;padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.caption strong{font-weight:500;color:var(--color-text-primary)}
+</style>
+<div class="wrap">
+<h2 class="sr-only">Lichen reproduction showing whether fungus and algae travel together (soredia, isidia) or separately (ascospores).</h2>
+<div class="tabs">
+  <button class="tab active" onclick="show(0)">Soredia</button>
+  <button class="tab" onclick="show(1)">Isidia</button>
+  <button class="tab" onclick="show(2)">Ascospores</button>
+</div>
+
+<div class="panel active" id="p0">
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:#5a9e28"></div>Algae</div>
+    <div class="leg"><div class="dot" style="background:#c47a20"></div>Fungal hyphae</div>
+    <div class="leg"><div class="dot" style="background:#8a6fc4"></div>Soredium (both together)</div>
+  </div>
+  <canvas id="c0" height="220"></canvas>
+  <div class="caption"><strong>Both partners disperse together.</strong> Each soredium is a ready-made bundle — algal cells wrapped in fungal threads. It can land anywhere and grow into a new lichen without needing to find a partner.</div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:#5a9e28"></div>Algae</div>
+    <div class="leg"><div class="dot" style="background:#c47a20"></div>Fungal hyphae</div>
+    <div class="leg"><div class="dot" style="background:#2a8a6a"></div>Isidium (both together)</div>
+  </div>
+  <canvas id="c1" height="220"></canvas>
+  <div class="caption"><strong>Both partners disperse together.</strong> An isidium is a coral-like outgrowth containing a complete cross-section of the lichen. When it breaks off, it carries algae and fungus in the exact same proportion as the parent thallus.</div>
+</div>
+
+<div class="panel" id="p2">
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:#3a78c0"></div>Ascospore (fungus only)</div>
+    <div class="leg"><div class="dot" style="background:#5a9e28"></div>Free-living alga</div>
+    <div class="leg"><div class="dot" style="background:#d84444"></div>Spore + alga = new lichen</div>
+  </div>
+  <canvas id="c2" height="220"></canvas>
+  <div class="caption"><strong>Only the fungus disperses.</strong> Ascospores carry no algae. A germinating spore must <em>find and capture</em> a compatible free-living alga in the environment — a risky process with no guarantee of success.</div>
+</div>
+</div>
+
+<script>
+const BG='#f4f0e8', SOIL='#c9b09a', SOILDK='#8a6a52';
+const ALG='#5a9e28', ALGL='#8bc45a';
+const FUN='#c47a20', FUNL='#e8a860';
+const SOR='#8a6fc4', SORL='#b8a0e8';
+const ISI='#2a8a6a', ISIL='#5abca0';
+const SPR='#3a78c0', SPRL='#7aaae0';
+const FREE_ALG='#5a9e28';
+const MEET='#d84444';
+
+function isDk(){return document.documentElement.classList.contains('dark')||window.matchMedia('(prefers-color-scheme:dark)').matches}
+function bg(){return isDk()?'#1e1a14':BG}
+function soil(){return isDk()?'#5a4030':SOIL}
+
+const timers={};
+function stopAll(){Object.values(timers).forEach(t=>clearInterval(t))}
+
+function show(i){
+  stopAll();
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  const fns=[animSoredia,animIsidia,animAscospore];
+  fns[i](i);
+}
+
+function drawBase(ctx,W,H,thColor){
+  ctx.fillStyle=bg();ctx.fillRect(0,0,W,H);
+  const ty=H*0.72;
+  ctx.fillStyle=soil();
+  ctx.beginPath();ctx.roundRect(W*0.06,ty,W*0.88,H*0.22,6);ctx.fill();
+  ctx.fillStyle=thColor||'#8fbb55';
+  for(let k=0;k<5;k++){
+    const lx=W*0.10+k*(W*0.16);
+    ctx.beginPath();ctx.roundRect(lx,ty-H*0.05,W*0.12,H*0.07,4);ctx.fill();
+  }
+}
+
+function drawSoredium(ctx,x,y,r,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=FUN;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(x-r*0.25,y-r*0.2,r*0.45,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=SORL;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.strokeStyle=SOR;ctx.lineWidth=1.5;ctx.stroke();
+  ctx.restore();
+}
+
+function drawIsidium(ctx,x,y,h,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=FUN;ctx.beginPath();ctx.roundRect(x-5,y-h,10,h,3);ctx.fill();
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.roundRect(x-3,y-h*0.6,6,h*0.55,2);ctx.fill();
+  ctx.strokeStyle=ISI;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(x-5,y-h,10,h,3);ctx.stroke();
+  ctx.restore();
+}
+
+function drawSpore(ctx,x,y,r,alpha,color){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=color||SPR;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=isDk()?SPRL:SPR;ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(x,y,r*0.55,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+}
+
+function drawAlga(ctx,x,y,r,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ALGL;ctx.beginPath();ctx.arc(x-r*0.2,y-r*0.2,r*0.4,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+function label(ctx,text,x,y,col){
+  ctx.font='11px sans-serif';ctx.fillStyle=col||(isDk()?'#aaa':'#555');
+  ctx.textAlign='center';ctx.fillText(text,x,y);
+}
+
+function animSoredia(idx){
+  const cv=document.getElementById('c0');
+  const W=cv.width=cv.offsetWidth,H=220;
+  const ctx=cv.getContext('2d');
+  let frame=0;
+  const soralia=[{x:W*0.22,y:H*0.68},{x:W*0.5,y:H*0.67},{x:W*0.78,y:H*0.68}];
+  let particles=[];
+
+  timers[idx]=setInterval(()=>{
+    drawBase(ctx,W,H,'#8fbb55');
+    soralia.forEach(s=>{
+      ctx.fillStyle=SOR;ctx.beginPath();ctx.ellipse(s.x,s.y,14,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=SORL;ctx.beginPath();ctx.ellipse(s.x,s.y,8,4,0,0,Math.PI*2);ctx.fill();
+    });
+    label(ctx,'soralia',W*0.5,H*0.84);
+
+    if(frame%14===0&&frame>20){
+      const src=soralia[Math.floor(Math.random()*3)];
+      particles.push({x:src.x+(Math.random()-.5)*16,y:src.y-4,vx:(Math.random()-.5)*1.8,vy:-(1.8+Math.random()*1.5),life:1,settled:false,sy:25+Math.random()*50,sx:30+Math.random()*(W-60)});
+    }
+    particles=particles.filter(p=>p.life>0);
+    particles.forEach(p=>{
+      if(!p.settled){p.x+=p.vx;p.y+=p.vy;p.vy+=0.03;if(p.y<=p.sy){p.settled=true;p.x=p.sx;p.y=p.sy}}
+      else{p.life-=0.005}
+      drawSoredium(ctx,p.x,p.y,7,p.life);
+      if(!p.settled){
+        ctx.save();ctx.globalAlpha=p.life*0.5;
+        ctx.font='10px sans-serif';ctx.fillStyle=isDk()?'#ddd':'#333';ctx.textAlign='center';
+        ctx.fillText('F+A',p.x,p.y-10);
+        ctx.restore();
+      }
+      if(p.settled&&p.life>0.5){
+        ctx.save();ctx.globalAlpha=Math.min((1-p.life)*3,1);
+        ctx.font='11px sans-serif';ctx.fillStyle=isDk()?'#9fe1cb':'#0F6E56';ctx.textAlign='center';
+        ctx.fillText('new lichen',p.x,p.y-14);
+        ctx.restore();
+      }
+    });
+    label(ctx,'fungus + algae travel together',W*0.5,14,isDk()?'#b8a0e8':'#534AB7');
+    frame++;
+    if(frame>300){frame=0;particles=[]}
+  },33);
+}
+
+function animIsidia(idx){
+  const cv=document.getElementById('c1');
+  const W=cv.width=cv.offsetWidth,H=220;
+  const ctx=cv.getContext('2d');
+  let frame=0;
+  const posts=[{x:W*0.2},{x:W*0.37},{x:W*0.54},{x:W*0.71},{x:W*0.87}];
+  let flying=[];
+  let grown=0;
+
+  timers[idx]=setInterval(()=>{
+    drawBase(ctx,W,H,'#7abe38');
+    grown=Math.min(1,(frame/60));
+    posts.forEach(p=>{
+      const h=(16+Math.random()*0)*grown;
+      drawIsidium(ctx,p.x,H*0.68,h*1,1);
+    });
+    label(ctx,'isidia',W*0.5,H*0.84);
+
+    if(frame===90){
+      const p=posts[1];
+      flying.push({x:p.x,y:H*0.68-16,vx:1.8,vy:-2.5,life:1,settled:false,tx:W*0.72,ty:55});
+    }
+    if(frame===150){
+      const p=posts[3];
+      flying.push({x:p.x,y:H*0.68-16,vx:-1.5,vy:-2,life:1,settled:false,tx:W*0.18,ty:45});
+    }
+    flying.forEach(f=>{
+      if(!f.settled){
+        f.x+=f.vx;f.y+=f.vy;f.vy+=0.05;
+        const dx=f.tx-f.x,dy=f.ty-f.y;
+        if(Math.sqrt(dx*dx+dy*dy)<8){f.settled=true;f.x=f.tx;f.y=f.ty}
+      } else {f.life-=0.004}
+      drawIsidium(ctx,f.x,f.y,14,f.life);
+      if(!f.settled){
+        ctx.save();ctx.globalAlpha=f.life*0.6;
+        ctx.font='10px sans-serif';ctx.fillStyle=isDk()?'#ddd':'#333';ctx.textAlign='center';
+        ctx.fillText('F+A',f.x,f.y-16);
+        ctx.restore();
+      }
+      if(f.settled&&f.life>0.5){
+        ctx.save();ctx.globalAlpha=Math.min((1-f.life)*3,1);
+        ctx.font='11px sans-serif';ctx.fillStyle=isDk()?'#9fe1cb':'#0F6E56';ctx.textAlign='center';
+        ctx.fillText('new lichen',f.x,f.y-20);
+        ctx.restore();
+      }
+    });
+    label(ctx,'fungus + algae travel together',W*0.5,14,isDk()?'#5abca0':'#0F6E56');
+    frame++;
+    if(frame>260){frame=0;flying=[]}
+  },33);
+}
+
+function animAscospore(idx){
+  const cv=document.getElementById('c2');
+  const W=cv.width=cv.offsetWidth,H=220;
+  const ctx=cv.getContext('2d');
+  let frame=0;
+  const apo=[{x:W*0.25,y:H*0.68},{x:W*0.55,y:H*0.67},{x:W*0.8,y:H*0.68}];
+  let spores=[];
+  const freeAlgae=[
+    {x:W*0.12,y:35},{x:W*0.45,y:22},{x:W*0.75,y:40},{x:W*0.9,y:18},{x:W*0.3,y:50}
+  ];
+  let encounters=[];
+
+  timers[idx]=setInterval(()=>{
+    drawBase(ctx,W,H,'#9aaa88');
+    apo.forEach(a=>{
+      ctx.fillStyle='#7a4830';ctx.beginPath();ctx.ellipse(a.x,a.y,16,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#b5633e';ctx.beginPath();ctx.ellipse(a.x,a.y-1,11,4,0,0,Math.PI*2);ctx.fill();
+    });
+    label(ctx,'apothecia (fungus only)',W*0.5,H*0.84);
+
+    freeAlgae.forEach(a=>{
+      const inEnc=encounters.some(e=>Math.abs(e.x-a.x)<8&&Math.abs(e.y-a.y)<8);
+      if(!inEnc) drawAlga(ctx,a.x,a.y,6,0.85);
+    });
+
+    const fc=isDk()?'#c0d8f8':'#042C53';
+    ctx.font='11px sans-serif';ctx.fillStyle=fc;ctx.textAlign='left';
+    ctx.fillText('free algae',6,20);
+
+    if(frame%10===0&&frame>15){
+      const src=apo[Math.floor(Math.random()*3)];
+      spores.push({x:src.x+(Math.random()-.5)*10,y:src.y-5,vx:(Math.random()-.5)*2.2,vy:-(2.2+Math.random()*1.5),life:1,settled:false,tx:30+Math.random()*(W-60),ty:20+Math.random()*50,met:false});
+    }
+    spores=spores.filter(p=>p.life>0);
+    spores.forEach(p=>{
+      if(!p.settled){
+        p.x+=p.vx;p.y+=p.vy;p.vy+=0.04;
+        const dx=p.tx-p.x,dy=p.ty-p.y;
+        if(Math.sqrt(dx*dx+dy*dy)<8){p.settled=true;p.x=p.tx;p.y=p.ty}
+      } else {
+        const nearAlg=freeAlgae.find(a=>Math.abs(a.x-p.x)<18&&Math.abs(a.y-p.y)<18);
+        if(nearAlg&&!p.met){p.met=true;encounters.push({x:(p.x+nearAlg.x)/2,y:(p.y+nearAlg.y)/2,life:1})}
+        p.life-=0.004;
+      }
+      if(!p.met){
+        drawSpore(ctx,p.x,p.y,5,p.life,SPR);
+        if(!p.settled){
+          ctx.save();ctx.globalAlpha=p.life*0.55;
+          ctx.font='10px sans-serif';ctx.fillStyle=isDk()?'#ddd':'#333';ctx.textAlign='center';
+          ctx.fillText('F only',p.x,p.y-9);
+          ctx.restore();
+        }
+        if(p.settled&&p.life>0.6){
+          ctx.save();ctx.globalAlpha=0.7;
+          ctx.font='11px sans-serif';ctx.fillStyle=isDk()?'#f0c0c0':'#A32D2D';ctx.textAlign='center';
+          ctx.fillText('needs alga!',p.x,p.y-12);
+          ctx.restore();
+        }
+      }
+    });
+
+    encounters=encounters.filter(e=>e.life>0);
+    encounters.forEach(e=>{
+      e.life-=0.003;
+      ctx.save();ctx.globalAlpha=Math.min(e.life*2,1);
+      ctx.fillStyle=MEET;ctx.beginPath();ctx.arc(e.x,e.y,8,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(e.x-3,e.y-2,4,0,Math.PI*2);ctx.fill();
+      ctx.font='11px sans-serif';ctx.fillStyle=isDk()?'#ffaaaa':'#790000';ctx.textAlign='center';
+      ctx.fillText('new lichen!',e.x,e.y-14);
+      ctx.restore();
+    });
+
+    label(ctx,'fungus only — must find algae to survive',W*0.5,14,isDk()?'#f0a0a0':'#A32D2D');
+    frame++;
+    if(frame>320){frame=0;spores=[];encounters=[]}
+  },33);
+}
+
+show(0);
+window.addEventListener('resize',()=>show(document.querySelector('.tab.active') ? [...document.querySelectorAll('.tab')].findIndex(t=>t.classList.contains('active')) : 0));
+</script>

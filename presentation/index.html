@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>We Are Becoming Lichens</title>
+<style>
+:root{
+  --bg:#efeae0;
+  --bg-deep:#e5dfd1;
+  --cream:#f6f2e8;
+  --ink:#2b2a24;
+  --ink-soft:#4a473d;
+  --muted:#6b6557;
+  --line:#cdc6b5;
+  --sage:#a8b89e;
+  --moss:#5a7050;
+  --moss-deep:#3e5238;
+  --terra:#b8825a;
+  --stone:#8a8478;
+  --accent:#7a8a6a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Hoefler Text", Georgia, serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:.01em;
+}
+.stage{position:fixed;inset:0;overflow:hidden}
+
+/* film grain + warm vignette overlay */
+.stage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(60,50,30,.10) 100%);
+  z-index:80;
+}
+.stage::after{
+  content:"";position:absolute;inset:-20%;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.18  0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  opacity:.18;mix-blend-mode:multiply;z-index:81;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;transform:translateY(8px);
+  transition:opacity 1.4s ease, transform 1.4s ease;
+  pointer-events:none;
+  padding:5vh 6vw 9vh;
+}
+.slide.active{opacity:1;transform:translateY(0);pointer-events:auto}
+
+.eyebrow{
+  font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--muted);
+}
+.eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--moss);margin-right:10px;vertical-align:1px}
+
+h1,h2,h3{font-weight:400;color:var(--ink)}
+h1{font-size:clamp(40px,6.4vw,92px);line-height:1.02;letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.2vw,46px);line-height:1.1;letter-spacing:-.005em}
+h3{font-size:clamp(16px,1.4vw,20px);line-height:1.3}
+p{font-size:clamp(15px,1.15vw,18px);line-height:1.65;color:var(--ink-soft);max-width:60ch}
+.tiny{font-size:12px;color:var(--muted);letter-spacing:.04em}
+em{font-style:italic;color:var(--moss-deep)}
+strong{font-weight:500;color:var(--ink)}
+
+/* ===== nav ===== */
+.nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:90;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  background:linear-gradient(to top, rgba(239,234,224,.92), rgba(239,234,224,0));
+}
+.dots{display:flex;gap:18px;align-items:center}
+.dotbtn{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  display:flex;align-items:center;gap:8px;color:var(--muted);
+  font:inherit;letter-spacing:.18em;text-transform:uppercase;padding:6px 0;
+}
+.dotbtn .pip{width:18px;height:1px;background:var(--stone);transition:all .5s}
+.dotbtn.active .pip{width:42px;background:var(--moss-deep)}
+.dotbtn.active{color:var(--ink)}
+.ctrls{display:flex;gap:18px;align-items:center}
+.ctrl{
+  appearance:none;border:1px solid var(--line);background:transparent;
+  color:var(--muted);font:inherit;letter-spacing:.18em;text-transform:uppercase;
+  padding:6px 12px;border-radius:999px;cursor:pointer;
+}
+.ctrl:hover{color:var(--ink);border-color:var(--ink-soft)}
+.brand{display:flex;gap:10px;align-items:center}
+.brand .glyph{
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, var(--sage), var(--moss) 70%, var(--moss-deep));
+  box-shadow:inset 0 0 4px rgba(0,0,0,.2);
+}
+
+/* ===== SLIDE 0 — opening ===== */
+.s0 .center{margin:auto;text-align:center;max-width:920px}
+.s0 .thesis{margin-top:36px;color:var(--ink-soft);font-size:clamp(16px,1.4vw,22px);line-height:1.6;font-style:italic}
+.s0 .meta{margin-top:48px;display:flex;gap:34px;justify-content:center;color:var(--muted);font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.s0 .ring{
+  width:78px;height:78px;border-radius:50%;margin:0 auto 32px;
+  background:
+    radial-gradient(circle at 38% 36%, #cbd6bb 0%, #8da189 32%, #5a7050 62%, #3e5238 100%);
+  position:relative;
+  box-shadow:0 0 0 1px var(--line), 0 18px 40px -18px rgba(60,80,40,.4);
+  animation:breathe 7s ease-in-out infinite;
+}
+.s0 .ring::before,.s0 .ring::after{
+  content:"";position:absolute;inset:-14px;border:1px solid var(--line);border-radius:50%;
+  animation:halo 7s ease-in-out infinite;
+}
+.s0 .ring::after{inset:-28px;animation-delay:.7s;opacity:.55}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes halo{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:.3}}
+
+/* ===== SLIDE 1 — diptychs ===== */
+.s1 .head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:3vh}
+.s1 .head h2{max-width:18ch}
+.s1 .head .right{max-width:38ch;text-align:right;color:var(--muted);font-style:italic;font-size:clamp(14px,1.05vw,17px);line-height:1.55}
+.diptychs{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+.diptych{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  opacity:0;transform:translateY(14px);
+  transition:opacity 1.6s ease, transform 1.6s ease;
+}
+.slide.active .diptych{opacity:1;transform:translateY(0)}
+.slide.active .diptych.d2{transition-delay:.9s}
+.pane{position:relative;border-radius:3px;overflow:hidden;background:var(--bg-deep);box-shadow:0 12px 30px -16px rgba(50,40,20,.45), 0 0 0 1px rgba(0,0,0,.04)}
+.pane img{display:block;width:100%;height:auto;filter:saturate(.92) contrast(1.02)}
+.pane .lbl{
+  position:absolute;left:10px;bottom:10px;
+  font-family:ui-sans-serif,system-ui,sans-serif;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#f6f2e8;
+  background:rgba(20,18,14,.45);padding:5px 9px;border-radius:2px;backdrop-filter:blur(4px);
+}
+.pane .lbl.tr{left:auto;right:10px}
+.s1 .caption{
+  position:absolute;left:6vw;right:6vw;bottom:8vh;
+  display:flex;justify-content:space-between;gap:30px;
+  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+}
+.s1 .caption .mid{color:var(--ink);letter-spacing:.04em;text-transform:none;font-style:italic;font-family:inherit;font-size:clamp(13px,1vw,16px)}
+
+/* ===== SLIDE 2 — reproduction ===== */
+.s2 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:2.4vh}
+.s2 .top h2{max-width:22ch}
+.s2 .top .lede{max-width:46ch;color:var(--ink-soft);font-style:italic;text-align:right;font-size:clamp(14px,1.05vw,17px);line-height:1.55}
+.modes{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vw;min-height:0}
+.mode{
+  display:flex;flex-direction:column;background:var(--cream);
+  border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  box-shadow:0 14px 30px -22px rgba(50,40,20,.4);
+}
+.mode .modehd{padding:14px 18px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.35)}
+.mode .num{font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.mode .modehd h3{margin-top:4px;font-size:clamp(18px,1.5vw,22px);color:var(--ink)}
+.mode .stage-c{position:relative;background:#f4f0e8;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.mode canvas{display:block;width:100%;height:100%}
+.mode .desc{padding:12px 18px 16px;font-size:13.5px;line-height:1.55;color:var(--ink-soft);border-top:1px solid var(--line);background:rgba(255,255,255,.35)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 18px;border-top:1px solid var(--line);font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;color:var(--muted)}
+.legend .leg{display:flex;align-items:center;gap:6px}
+.legend .swatch{width:10px;height:10px;border-radius:50%}
+
+/* ===== SLIDE 3 — human movement (placeholder structure) ===== */
+.s3 .head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:3vh}
+.s3 .head h2{max-width:20ch}
+.s3 .head .right{max-width:38ch;text-align:right;color:var(--muted);font-style:italic;font-size:clamp(14px,1.05vw,17px);line-height:1.55}
+.parallels{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vw}
+.par{
+  display:flex;flex-direction:column;border:1px dashed var(--line);
+  border-radius:6px;padding:24px;background:rgba(255,255,255,.25);
+  position:relative;overflow:hidden;
+}
+.par .map{
+  position:absolute;inset:auto -10% -30% -10%;height:60%;opacity:.18;
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--moss) 0 2px, transparent 3px),
+    radial-gradient(circle at 35% 60%, var(--terra) 0 2px, transparent 3px),
+    radial-gradient(circle at 60% 25%, var(--sage) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 55%, var(--moss-deep) 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 75%, var(--stone) 0 2px, transparent 3px);
+  filter:blur(.4px);
+}
+.par .num{font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.par h3{margin-top:8px;font-size:clamp(20px,1.7vw,26px);color:var(--ink)}
+.par .pair{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--moss-deep);
+}
+.par p{margin-top:10px;color:var(--ink-soft);font-size:14.5px;line-height:1.6}
+.par .ph{margin-top:auto;padding-top:18px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);opacity:.7}
+
+/* ===== SLIDE 4 — closing ===== */
+.s4 .wrap{margin:auto;max-width:880px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:28px}
+.s4 .yrs{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
+.s4 h2{font-size:clamp(28px,4vw,60px);line-height:1.12;max-width:22ch}
+.s4 .quote{font-style:italic;color:var(--ink-soft);max-width:54ch;font-size:clamp(15px,1.25vw,19px);line-height:1.65}
+.s4 .quote::before,.s4 .quote::after{content:"“";color:var(--moss);margin-right:6px}
+.s4 .quote::after{content:"”";margin-left:6px;margin-right:0}
+.s4 .cite{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.s4 .timeline{
+  width:min(620px,80%);margin-top:8px;position:relative;height:48px;
+}
+.s4 .timeline .bar{position:absolute;left:0;right:0;top:23px;height:1px;background:var(--line)}
+.s4 .timeline .now{position:absolute;right:0;top:14px;width:20px;height:20px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 6px rgba(184,130,90,.18)}
+.s4 .timeline .then{position:absolute;left:0;top:14px;width:20px;height:20px;border-radius:50%;background:var(--moss);box-shadow:0 0 0 6px rgba(90,112,80,.18)}
+.s4 .timeline .lbl-l,.s4 .timeline .lbl-r{position:absolute;top:32px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.s4 .timeline .lbl-l{left:0}.s4 .timeline .lbl-r{right:0}
+.s4 .ph{margin-top:14px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);opacity:.7}
+
+/* small screens */
+@media (max-width: 880px){
+  .diptychs,.modes,.parallels{grid-template-columns:1fr;gap:18px}
+  .s1 .head,.s2 .top,.s3 .head{flex-direction:column;align-items:flex-start}
+  .s1 .head .right,.s2 .top .lede,.s3 .head .right{text-align:left}
+  .slide{padding:6vh 5vw 12vh}
+}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+  <!-- SLIDE 0 — opening -->
+  <section class="slide s0 active" data-slide="0">
+    <div class="center">
+      <div class="ring" aria-hidden="true"></div>
+      <div class="eyebrow"><span class="dot"></span>A speculative reading · 400 million years</div>
+      <h1 style="margin-top:18px">We Are Becoming<br><em>Lichens</em>.</h1>
+      <p class="thesis">The patterns we see in a lichen colony and in satellite views of human settlement are converging — not by coincidence, but because we are entering a phase where humans, like lichens, exist as <strong>relationships moving across surfaces</strong> rather than populations fixed to places.</p>
+      <div class="meta">
+        <span>I · The Visual Rhyme</span>
+        <span>II · Three Strategies</span>
+        <span>III · Three Mobilities</span>
+        <span>IV · After the Forest</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 1 — diptychs -->
+  <section class="slide s1" data-slide="1">
+    <div class="head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>I · The Visual Rhyme</div>
+        <h2 style="margin-top:16px">A colony, from above.<br>A settlement, from above.</h2>
+      </div>
+      <div class="right">Two images. One is a square centimeter of rock, the other a hundred kilometers of land. Look at them long enough and they refuse to stay apart.</div>
+    </div>
+
+    <div class="diptychs">
+      <div class="diptych d1">
+        <div class="pane">
+          <img src="resources/part1/image.jpg" alt="Lichen colony close-up">
+          <div class="lbl">Lichen · ~5 cm</div>
+        </div>
+        <div class="pane">
+          <img src="resources/part1/image (1).jpg" alt="Satellite view of land">
+          <div class="lbl tr">Satellite · ~120 km</div>
+        </div>
+      </div>
+
+      <div class="diptych d2">
+        <div class="pane">
+          <img src="resources/part1/image (2).jpg" alt="Lichen close-up, second">
+          <div class="lbl">Lichen · ~8 cm</div>
+        </div>
+        <div class="pane">
+          <img src="resources/part1/image (3).jpg" alt="Satellite view of settlement">
+          <div class="lbl tr">Settlement · ~80 km</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caption">
+      <span>Scale · zoomed apart by ~10⁶</span>
+      <span class="mid">the architecture of relationship, surfacing as form</span>
+      <span>Pause. Look again.</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 — three reproduction modes -->
+  <section class="slide s2" data-slide="2">
+    <div class="top">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>II · How a Lichen Spreads</div>
+        <h2 style="margin-top:16px">Three bets on how to carry a relationship across changing terrain.</h2>
+      </div>
+      <div class="lede">A lichen is not one organism but a 400-million-year-old partnership — a fungus and an alga. To reproduce, it has to decide: do the partners travel together, or do they part ways and hope to meet again?</div>
+    </div>
+
+    <div class="modes">
+      <article class="mode">
+        <div class="modehd">
+          <div class="num">Mode 01</div>
+          <h3>Soredia — bundles of both</h3>
+        </div>
+        <div class="stage-c"><canvas id="c0"></canvas></div>
+        <div class="legend">
+          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Algae</div>
+          <div class="leg"><span class="swatch" style="background:#c47a20"></span>Fungus</div>
+          <div class="leg"><span class="swatch" style="background:#8a6fc4"></span>Soredium (both)</div>
+        </div>
+        <div class="desc"><strong>Both partners travel together.</strong> Each soredium is a ready-made bundle — algal cells wrapped in fungal threads. Lands anywhere, grows immediately.</div>
+      </article>
+
+      <article class="mode">
+        <div class="modehd">
+          <div class="num">Mode 02</div>
+          <h3>Isidia — broken-off branches</h3>
+        </div>
+        <div class="stage-c"><canvas id="c1"></canvas></div>
+        <div class="legend">
+          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Algae</div>
+          <div class="leg"><span class="swatch" style="background:#c47a20"></span>Fungus</div>
+          <div class="leg"><span class="swatch" style="background:#2a8a6a"></span>Isidium (both)</div>
+        </div>
+        <div class="desc"><strong>Both partners travel together.</strong> A coral-like outgrowth carrying a full cross-section of the lichen. Heavier than soredia — moves shorter distances, but identical to the parent.</div>
+      </article>
+
+      <article class="mode">
+        <div class="modehd">
+          <div class="num">Mode 03</div>
+          <h3>Ascospores — fungus alone</h3>
+        </div>
+        <div class="stage-c"><canvas id="c2"></canvas></div>
+        <div class="legend">
+          <div class="leg"><span class="swatch" style="background:#3a78c0"></span>Spore (fungus only)</div>
+          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Free alga</div>
+          <div class="leg"><span class="swatch" style="background:#d84444"></span>Encounter</div>
+        </div>
+        <div class="desc"><strong>Only the fungus disperses.</strong> Ascospores carry no algae and must <em>find</em> a compatible partner already living in the new place. Risky — no guarantees.</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 — human movement parallels (placeholder structure) -->
+  <section class="slide s3" data-slide="3">
+    <div class="head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>III · Three Mobilities — placeholder</div>
+        <h2 style="margin-top:16px">The same three strategies, written in human movement.</h2>
+      </div>
+      <div class="right">If a lichen's reproduction is a bet on how to carry a relationship across terrain, then contemporary mobility is doing the same arithmetic at planetary scale.</div>
+    </div>
+
+    <div class="parallels">
+      <article class="par">
+        <div class="map" aria-hidden="true"></div>
+        <div class="num">Parallel 01 · ↔ Soredia</div>
+        <h3>Digital nomads</h3>
+        <div class="pair">Both partners travel · self-contained bundles</div>
+        <p>A person, a laptop, a network of tools — moving together as a ready-made unit. Lands anywhere with bandwidth and begins immediately. Light, high-dispersal, low ties to substrate.</p>
+        <div class="ph">[ visuals / data — to come ]</div>
+      </article>
+
+      <article class="par">
+        <div class="map" aria-hidden="true"></div>
+        <div class="num">Parallel 02 · ↔ Isidia</div>
+        <h3>Climate migration</h3>
+        <div class="pair">Whole communities — moving as a piece of the parent</div>
+        <p>Families, villages, livelihoods carried together as a coral-like fragment of an existing place. Shorter distances. The relationship survives intact, but the terrain it lands on is new.</p>
+        <div class="ph">[ visuals / data — to come ]</div>
+      </article>
+
+      <article class="par">
+        <div class="map" aria-hidden="true"></div>
+        <div class="num">Parallel 03 · ↔ Ascospores</div>
+        <h3>Global refugees</h3>
+        <div class="pair">One partner travels · must find the other on arrival</div>
+        <p>Forced dispersal without the supporting ecology. A person arrives carrying only themselves, and must locate work, kin, language, legal status — partners they must capture in a new place. The riskiest bet.</p>
+        <div class="ph">[ visuals / data — to come ]</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — closing / future (placeholder) -->
+  <section class="slide s4" data-slide="4">
+    <div class="wrap">
+      <div class="yrs">IV · After the Forest — placeholder</div>
+      <h2>What can a 400-million-year-old partnership teach a species that has been mobile for two hundred?</h2>
+      <p class="quote">Lichens are places where an organism unravels into an ecosystem and where an ecosystem congeals into an organism.</p>
+      <div class="cite">— Merlin Sheldrake</div>
+
+      <div class="timeline" aria-hidden="true">
+        <div class="bar"></div>
+        <div class="then"></div>
+        <div class="now"></div>
+        <div class="lbl-l">Lichen · ~400 Myr</div>
+        <div class="lbl-r">Us · now</div>
+      </div>
+
+      <p style="max-width:54ch;color:var(--ink-soft);font-style:italic">
+        If we are becoming relationships moving across surfaces, then the question stops being <em>how do we hold ground</em> and starts being <em>how do we hold each other while the ground moves</em>.
+      </p>
+      <div class="ph">[ closing visuals / call to design — to come ]</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- nav -->
+<nav class="nav" aria-label="slide navigation">
+  <div class="brand"><span class="glyph"></span><span>We Are Becoming Lichens</span></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrls">
+    <button class="ctrl" id="autoBtn" aria-pressed="false">Autoplay · off</button>
+    <button class="ctrl" id="prevBtn">◀ prev</button>
+    <button class="ctrl" id="nextBtn">next ▶</button>
+  </div>
+</nav>
+
+<script>
+/* ========== slide controller ========== */
+const slides = document.querySelectorAll('.slide');
+const N = slides.length;
+let cur = 0;
+let auto = false;
+let autoTimer = null;
+const SLIDE_MS = [9000, 14000, 16000, 13000, 13000]; // reflective pacing per slide
+
+const dotsEl = document.getElementById('dots');
+const titles = ['Opening','Visual rhyme','Three strategies','Three mobilities','After the forest'];
+slides.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.className='dotbtn'+(i===0?' active':'');
+  b.innerHTML='<span class="pip"></span><span>'+String(i).padStart(2,'0')+' · '+titles[i]+'</span>';
+  b.onclick=()=>go(i);
+  dotsEl.appendChild(b);
+});
+
+function go(i){
+  i=(i+N)%N;
+  slides[cur].classList.remove('active');
+  cur=i;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.dotbtn').forEach((d,j)=>d.classList.toggle('active',j===cur));
+  if(cur===2) startAnims(); else stopAnims();
+  if(auto) scheduleAuto();
+}
+function next(){go(cur+1)}
+function prev(){go(cur-1)}
+
+document.getElementById('nextBtn').onclick=next;
+document.getElementById('prevBtn').onclick=prev;
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next()}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+  else if(e.key==='Home'){go(0)} else if(e.key==='End'){go(N-1)}
+  else if(/^[0-9]$/.test(e.key)){const n=parseInt(e.key);if(n<N)go(n)}
+});
+
+const autoBtn=document.getElementById('autoBtn');
+autoBtn.onclick=()=>{
+  auto=!auto;
+  autoBtn.textContent='Autoplay · '+(auto?'on':'off');
+  autoBtn.setAttribute('aria-pressed',auto);
+  if(auto) scheduleAuto(); else clearTimeout(autoTimer);
+};
+function scheduleAuto(){
+  clearTimeout(autoTimer);
+  autoTimer=setTimeout(()=>{ if(auto){ next(); } }, SLIDE_MS[cur]||10000);
+}
+
+/* ========== lichen reproduction canvas animations ========== */
+const BG='#f4f0e8';
+const ALG='#5a9e28', ALGL='#8bc45a';
+const FUN='#c47a20';
+const SOR='#8a6fc4', SORL='#b8a0e8';
+const ISI='#2a8a6a';
+const SPR='#3a78c0', SPRL='#7aaae0';
+const MEET='#d84444';
+
+const animTimers={};
+function stopAnims(){Object.values(animTimers).forEach(t=>clearInterval(t));for(const k in animTimers)delete animTimers[k]}
+
+function sizeCanvas(cv){
+  const r=cv.parentElement.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  cv.width=Math.max(220,Math.floor(r.width*dpr));
+  cv.height=Math.max(180,Math.floor(r.height*dpr));
+  cv.style.width=r.width+'px';
+  cv.style.height=r.height+'px';
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {W:r.width,H:r.height,ctx};
+}
+
+function drawBase(ctx,W,H,thColor){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+  const ty=H*0.72;
+  ctx.fillStyle='#c9b09a';
+  ctx.beginPath();ctx.roundRect(W*0.06,ty,W*0.88,H*0.22,6);ctx.fill();
+  ctx.fillStyle=thColor||'#8fbb55';
+  for(let k=0;k<5;k++){
+    const lx=W*0.10+k*(W*0.16);
+    ctx.beginPath();ctx.roundRect(lx,ty-H*0.05,W*0.12,H*0.07,4);ctx.fill();
+  }
+}
+function drawSoredium(ctx,x,y,r,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=FUN;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(x-r*0.25,y-r*0.2,r*0.45,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=SOR;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+}
+function drawIsidium(ctx,x,y,h,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=FUN;ctx.beginPath();ctx.roundRect(x-5,y-h,10,h,3);ctx.fill();
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.roundRect(x-3,y-h*0.6,6,h*0.55,2);ctx.fill();
+  ctx.strokeStyle=ISI;ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(x-5,y-h,10,h,3);ctx.stroke();
+  ctx.restore();
+}
+function drawSpore(ctx,x,y,r,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=SPR;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=SPRL;ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,r*0.55,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+}
+function drawAlga(ctx,x,y,r,alpha){
+  ctx.save();ctx.globalAlpha=alpha??1;
+  ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ALGL;ctx.beginPath();ctx.arc(x-r*0.2,y-r*0.2,r*0.4,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+function label(ctx,text,x,y,col){
+  ctx.font='11px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle=col||'#6b6557';
+  ctx.textAlign='center';ctx.fillText(text,x,y);
+}
+
+function animSoredia(){
+  const cv=document.getElementById('c0');const {W,H,ctx}=sizeCanvas(cv);
+  let frame=0;
+  const soralia=[{x:W*0.22,y:H*0.68},{x:W*0.5,y:H*0.67},{x:W*0.78,y:H*0.68}];
+  let particles=[];
+  animTimers.s0=setInterval(()=>{
+    drawBase(ctx,W,H,'#8fbb55');
+    soralia.forEach(s=>{
+      ctx.fillStyle=SOR;ctx.beginPath();ctx.ellipse(s.x,s.y,14,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=SORL;ctx.beginPath();ctx.ellipse(s.x,s.y,8,4,0,0,Math.PI*2);ctx.fill();
+    });
+    label(ctx,'soralia',W*0.5,H*0.86);
+    if(frame%16===0&&frame>20){
+      const src=soralia[Math.floor(Math.random()*3)];
+      particles.push({x:src.x+(Math.random()-.5)*16,y:src.y-4,vx:(Math.random()-.5)*1.6,vy:-(1.6+Math.random()*1.4),life:1,settled:false,sy:24+Math.random()*40,sx:30+Math.random()*(W-60)});
+    }
+    particles=particles.filter(p=>p.life>0);
+    particles.forEach(p=>{
+      if(!p.settled){p.x+=p.vx;p.y+=p.vy;p.vy+=0.03;if(p.y<=p.sy){p.settled=true;p.x=p.sx;p.y=p.sy}}
+      else{p.life-=0.005}
+      drawSoredium(ctx,p.x,p.y,7,p.life);
+      if(p.settled&&p.life>0.55){
+        ctx.save();ctx.globalAlpha=Math.min((1-p.life)*3,1);
+        ctx.font='10px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle='#0F6E56';ctx.textAlign='center';
+        ctx.fillText('new lichen',p.x,p.y-13);
+        ctx.restore();
+      }
+    });
+    label(ctx,'fungus + algae travel together',W*0.5,16,'#534AB7');
+    frame++;if(frame>320){frame=0;particles=[]}
+  },33);
+}
+
+function animIsidia(){
+  const cv=document.getElementById('c1');const {W,H,ctx}=sizeCanvas(cv);
+  let frame=0;
+  const posts=[{x:W*0.2},{x:W*0.37},{x:W*0.54},{x:W*0.71},{x:W*0.87}];
+  let flying=[];
+  animTimers.s1=setInterval(()=>{
+    drawBase(ctx,W,H,'#7abe38');
+    const grown=Math.min(1,(frame/60));
+    posts.forEach(p=>{drawIsidium(ctx,p.x,H*0.68,16*grown,1)});
+    label(ctx,'isidia',W*0.5,H*0.86);
+    if(frame===90){flying.push({x:posts[1].x,y:H*0.68-16,vx:1.6,vy:-2.4,life:1,settled:false,tx:W*0.72,ty:55});}
+    if(frame===160){flying.push({x:posts[3].x,y:H*0.68-16,vx:-1.4,vy:-2,life:1,settled:false,tx:W*0.18,ty:45});}
+    flying.forEach(f=>{
+      if(!f.settled){f.x+=f.vx;f.y+=f.vy;f.vy+=0.05;
+        const dx=f.tx-f.x,dy=f.ty-f.y;if(Math.sqrt(dx*dx+dy*dy)<8){f.settled=true;f.x=f.tx;f.y=f.ty}}
+      else{f.life-=0.004}
+      drawIsidium(ctx,f.x,f.y,14,f.life);
+      if(f.settled&&f.life>0.55){
+        ctx.save();ctx.globalAlpha=Math.min((1-f.life)*3,1);
+        ctx.font='10px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle='#0F6E56';ctx.textAlign='center';
+        ctx.fillText('new lichen',f.x,f.y-18);
+        ctx.restore();
+      }
+    });
+    label(ctx,'fungus + algae travel together',W*0.5,16,'#0F6E56');
+    frame++;if(frame>280){frame=0;flying=[]}
+  },33);
+}
+
+function animAscospore(){
+  const cv=document.getElementById('c2');const {W,H,ctx}=sizeCanvas(cv);
+  let frame=0;
+  const apo=[{x:W*0.25,y:H*0.68},{x:W*0.55,y:H*0.67},{x:W*0.8,y:H*0.68}];
+  let spores=[];
+  const freeAlgae=[{x:W*0.12,y:35},{x:W*0.45,y:22},{x:W*0.75,y:40},{x:W*0.9,y:18},{x:W*0.3,y:50}];
+  let encounters=[];
+  animTimers.s2=setInterval(()=>{
+    drawBase(ctx,W,H,'#9aaa88');
+    apo.forEach(a=>{
+      ctx.fillStyle='#7a4830';ctx.beginPath();ctx.ellipse(a.x,a.y,16,7,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#b5633e';ctx.beginPath();ctx.ellipse(a.x,a.y-1,11,4,0,0,Math.PI*2);ctx.fill();
+    });
+    label(ctx,'apothecia (fungus only)',W*0.5,H*0.86);
+    freeAlgae.forEach(a=>{
+      const inEnc=encounters.some(e=>Math.abs(e.x-a.x)<8&&Math.abs(e.y-a.y)<8);
+      if(!inEnc) drawAlga(ctx,a.x,a.y,6,0.85);
+    });
+    ctx.font='10px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle='#042C53';ctx.textAlign='left';
+    ctx.fillText('free algae',8,22);
+    if(frame%12===0&&frame>15){
+      const src=apo[Math.floor(Math.random()*3)];
+      spores.push({x:src.x+(Math.random()-.5)*10,y:src.y-5,vx:(Math.random()-.5)*2,vy:-(2+Math.random()*1.5),life:1,settled:false,tx:30+Math.random()*(W-60),ty:20+Math.random()*50,met:false});
+    }
+    spores=spores.filter(p=>p.life>0);
+    spores.forEach(p=>{
+      if(!p.settled){p.x+=p.vx;p.y+=p.vy;p.vy+=0.04;
+        const dx=p.tx-p.x,dy=p.ty-p.y;if(Math.sqrt(dx*dx+dy*dy)<8){p.settled=true;p.x=p.tx;p.y=p.ty}}
+      else{
+        const nearAlg=freeAlgae.find(a=>Math.abs(a.x-p.x)<18&&Math.abs(a.y-p.y)<18);
+        if(nearAlg&&!p.met){p.met=true;encounters.push({x:(p.x+nearAlg.x)/2,y:(p.y+nearAlg.y)/2,life:1})}
+        p.life-=0.004;
+      }
+      if(!p.met){
+        drawSpore(ctx,p.x,p.y,5,p.life);
+        if(p.settled&&p.life>0.65){
+          ctx.save();ctx.globalAlpha=0.7;
+          ctx.font='10px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle='#A32D2D';ctx.textAlign='center';
+          ctx.fillText('needs alga',p.x,p.y-11);
+          ctx.restore();
+        }
+      }
+    });
+    encounters=encounters.filter(e=>e.life>0);
+    encounters.forEach(e=>{
+      e.life-=0.003;
+      ctx.save();ctx.globalAlpha=Math.min(e.life*2,1);
+      ctx.fillStyle=MEET;ctx.beginPath();ctx.arc(e.x,e.y,8,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=ALG;ctx.beginPath();ctx.arc(e.x-3,e.y-2,4,0,Math.PI*2);ctx.fill();
+      ctx.font='10px ui-sans-serif,system-ui,sans-serif';ctx.fillStyle='#790000';ctx.textAlign='center';
+      ctx.fillText('new lichen!',e.x,e.y-13);
+      ctx.restore();
+    });
+    label(ctx,'fungus only — must find algae',W*0.5,16,'#A32D2D');
+    frame++;if(frame>340){frame=0;spores=[];encounters=[]}
+  },33);
+}
+
+function startAnims(){stopAnims();animSoredia();animIsidia();animAscospore()}
+window.addEventListener('resize',()=>{if(cur===2){startAnims()}});
+
+/* don't start animations until slide 2 is visible */
+</script>
+</body>
+</html>
