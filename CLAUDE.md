@@ -1,6 +1,6 @@
 # We Are Becoming Lichens — repo conventions
 
-A speculative 10-minute presentation. Single deliverable: `presentation/index.html` — one self-contained slide-video. Resources live in `presentation/resources/partN/`.
+A speculative 10-minute presentation. Single deliverable: `index.html` at the repo root — one self-contained slide-video. Image and source resources live in `resources/partN/`. The site is published via GitHub Pages, so root layout matters: `index.html` is what gets served.
 
 This file exists so multiple contributors (and their Claude Code sessions) can extend Parts 3 and 4 without breaking the visual unity already established in Parts 1 and 2.
 
@@ -77,8 +77,8 @@ Slides 3 and 4 should not invent a new grammar. Use the existing classes (`.slid
 - **Don't introduce charts/maps that need real data we don't have.** If you need migration numbers, refugee counts, etc., either source them with a citation in the file or use a stylized abstraction (dotted maps, like the `.par .map` pattern already in slide 3).
 - **No emojis in slide content.** The deck is quiet on purpose.
 - **No external fonts, no CDN scripts, no build step.** This must remain a single double-clickable HTML file. Vanilla JS + inline `<style>` only.
-- **Images go under `presentation/resources/partN/`** with the same lowercase pattern. Reference them with relative paths from `index.html`.
-- **Test by opening the file directly** (`open presentation/index.html`). It must work from `file://` — no `fetch()`, no module imports, no server required.
+- **Images go under `resources/partN/`** with the same lowercase pattern. Reference them with relative paths from `index.html` (e.g. `resources/part1/image.jpg`).
+- **Test by opening the file directly** (`open index.html`). It must work from `file://` *and* from GitHub Pages — no `fetch()`, no module imports, no server required, no absolute URLs.
 
 ---
 
