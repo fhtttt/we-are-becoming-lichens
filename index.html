@@ -662,15 +662,16 @@ body:not(.talk-visible) .scene-overlay .closing{opacity:0 !important}
 
 </main>
 
-<!-- narration recording / playback (only visible on slide 3) -->
-<div class="narr-panel" id="narrPanel" aria-label="narration recording">
-  <button class="narr-btn rec" id="narrRec" title="Record narration">●</button>
+<!-- narration playback (only visible on slide 3) — record / save UI is
+     intentionally hidden; narration is bundled at resources/narration/. -->
+<div class="narr-panel" id="narrPanel" aria-label="narration playback">
+  <button class="narr-btn rec hidden" id="narrRec" title="Record narration">●</button>
   <button class="narr-btn stop hidden" id="narrStop" title="Stop">■</button>
   <button class="narr-btn play" id="narrPlay" title="Play narration" disabled>▶</button>
-  <button class="narr-btn save" id="narrSave" title="Download narration.webm + narration.json" disabled>⤓</button>
-  <button class="narr-btn load" id="narrLoadBtn" title="Load narration files (audio + JSON)">⤒</button>
+  <button class="narr-btn save hidden" id="narrSave" title="Download narration files" disabled>⤓</button>
+  <button class="narr-btn load hidden" id="narrLoadBtn" title="Load narration files (audio + JSON)">⤒</button>
   <input type="file" id="narrLoad" accept="audio/*,.json,.webm" multiple hidden>
-  <span class="narr-status" id="narrStatus">ready</span>
+  <span class="narr-status" id="narrStatus">loading…</span>
 </div>
 
 <!-- nav -->
@@ -2454,36 +2455,54 @@ function narrCueRecord(type, value){
 }
 
 function narrSyncUI(){
-  const rec = document.getElementById('narrRec');
+  // Recording / save / load buttons are intentionally hidden — narration is
+  // bundled. Only PLAY / STOP are operated by syncUI; the rest stay as the
+  // HTML left them (hidden).
   const stop = document.getElementById('narrStop');
   const play = document.getElementById('narrPlay');
-  const save = document.getElementById('narrSave');
   const status = document.getElementById('narrStatus');
-  if(!rec) return;
+  if(!play) return;
   if(narration.state === 'idle'){
-    rec.classList.remove('hidden');
     stop.classList.add('hidden');
     play.disabled = !narration.audioBlob;
-    save.disabled = !narration.audioBlob;
-    let label = 'ready';
+    let label;
     if(narration.audioBlob) label = `loaded · ${narration.storedEvents.length} cues`;
     else if(narration.storedEvents.length) label = `${narration.storedEvents.length} cues · no audio`;
+    else label = 'no narration file';
     status.textContent = label;
     status.className = 'narr-status';
   } else if(narration.state === 'recording'){
-    rec.classList.add('hidden');
     stop.classList.remove('hidden');
     play.disabled = true;
-    save.disabled = true;
     status.textContent = '● rec · ' + narration.events.length;
     status.className = 'narr-status active';
   } else if(narration.state === 'playing'){
-    rec.classList.add('hidden');
     stop.classList.remove('hidden');
     play.disabled = true;
-    save.disabled = true;
     status.textContent = '▶ playing';
     status.className = 'narr-status playing';
+  }
+}
+
+async function narrAutoLoad(){
+  try {
+    const [audioRes, jsonRes] = await Promise.all([
+      fetch('resources/narration/narration.webm'),
+      fetch('resources/narration/narration.json'),
+    ]);
+    if(!audioRes.ok) throw new Error('audio HTTP ' + audioRes.status);
+    if(!jsonRes.ok) throw new Error('json HTTP ' + jsonRes.status);
+    const blob = await audioRes.blob();
+    const json = await jsonRes.json();
+    if(narration.audioUrl) URL.revokeObjectURL(narration.audioUrl);
+    narration.audioBlob = blob;
+    narration.audioUrl = URL.createObjectURL(blob);
+    narration.storedEvents = json.events || [];
+    narrSyncUI();
+  } catch(e){
+    // Files missing or fetch blocked (e.g. file:// in some browsers). Leave
+    // the panel showing "no narration file" — playback button stays disabled.
+    narrSyncUI();
   }
 }
 
@@ -2600,8 +2619,10 @@ function narrLoadFiles(files){
 }
 
 (()=>{
-  const rec = document.getElementById('narrRec');
-  if(!rec) return;
+  const play = document.getElementById('narrPlay');
+  if(!play) return;
+  // Record / save / load handlers are still wired in case the buttons are
+  // unhidden manually, but the buttons start hidden and stay hidden.
   document.getElementById('narrRec').onclick = narrStartRec;
   document.getElementById('narrStop').onclick = narrStopRec;
   document.getElementById('narrPlay').onclick = narrStartPlay;
@@ -2609,6 +2630,7 @@ function narrLoadFiles(files){
   document.getElementById('narrLoadBtn').onclick = ()=> document.getElementById('narrLoad').click();
   document.getElementById('narrLoad').onchange = (e)=> narrLoadFiles(Array.from(e.target.files));
   narrSyncUI();
+  narrAutoLoad();
 })();
 
 /* don't start animations until their slide is visible */
