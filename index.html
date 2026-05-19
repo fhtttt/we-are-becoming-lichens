@@ -170,6 +170,103 @@ strong{font-weight:500;color:var(--ink)}
 .legend .leg{display:flex;align-items:center;gap:6px}
 .legend .swatch{width:10px;height:10px;border-radius:50%}
 
+/* ===== SLIDE 4 — comparison table ===== */
+.s4 .compare-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:2vh}
+.s4 .compare-head h2{max-width:24ch;margin-top:14px}
+.compare-table{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns: 110px repeat(3, 1fr);
+  grid-template-rows: auto 1fr 1fr;
+  gap:10px 14px;
+}
+.ct-cell{display:flex;flex-direction:column;min-width:0;min-height:0}
+.ct-corner{}
+.ct-header{
+  padding:10px 4px 6px;
+}
+.ct-header h4{
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:clamp(15px,1.25vw,19px);font-weight:400;color:var(--ink);
+  line-height:1.25;
+}
+.ct-header h4 span{color:var(--moss);margin:0 4px;font-style:normal}
+.ct-header p{
+  font-family:ui-sans-serif,system-ui,sans-serif;
+  font-size:clamp(11px,.85vw,13px);line-height:1.45;color:var(--muted);
+  margin-top:6px;max-width:none;
+}
+.ct-rowlabel{
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-end;
+  padding-right:10px;border-right:1px solid var(--line);
+  font-family:ui-sans-serif,system-ui,sans-serif;
+}
+.ct-rowlabel span{
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink);
+}
+.ct-rowlabel em{
+  display:block;margin-top:6px;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  font-style:normal;
+}
+.ct-canvas{
+  background:#f4f0e8;
+  border:1px solid var(--line);
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:0 8px 22px -18px rgba(50,40,20,.4);
+  position:relative;
+}
+.ct-canvas canvas{display:block;width:100%;height:100%}
+
+.compare-foot{
+  margin-top:2.5vh;text-align:center;
+  font-size:clamp(13px,1.05vw,16px);line-height:1.55;color:var(--ink-soft);
+  max-width:90ch;align-self:center;
+}
+.compare-foot em{font-style:italic}
+.compare-foot strong{color:var(--moss-deep);font-weight:500;font-style:italic}
+
+@media (max-width: 880px){
+  .compare-table{grid-template-columns:1fr;grid-template-rows:none}
+  .ct-rowlabel{flex-direction:row;justify-content:flex-start;border-right:none;border-bottom:1px solid var(--line);padding:6px 0}
+  .ct-rowlabel em{margin-top:0;margin-left:10px}
+}
+
+/* ===== Narration record/playback panel (slide 3 only) ===== */
+.narr-panel{
+  position:fixed;right:24px;top:24px;
+  display:none;align-items:center;gap:8px;
+  z-index:95;
+  background:rgba(20,18,14,.88);
+  color:var(--cream);
+  padding:8px 12px;
+  border-radius:8px;
+  font-family:ui-sans-serif,system-ui,sans-serif;
+  font-size:13px;
+  backdrop-filter:blur(4px);
+  box-shadow:0 12px 30px -16px rgba(0,0,0,.6);
+}
+.narr-panel.show{display:flex}
+.narr-btn{
+  appearance:none;border:1px solid rgba(246,242,232,.30);
+  background:transparent;color:var(--cream);
+  font:inherit;padding:4px 10px;border-radius:4px;cursor:pointer;
+  min-width:32px;line-height:1;
+}
+.narr-btn:disabled{opacity:.35;cursor:default}
+.narr-btn:not(:disabled):hover{background:rgba(246,242,232,.10)}
+.narr-btn.rec{color:#ff7c7c;border-color:#ff7c7c}
+.narr-btn.stop{color:#ffd45a;border-color:#ffd45a}
+.narr-btn.play{color:#7cffa0;border-color:#7cffa0}
+.narr-btn.hidden{display:none}
+.narr-status{
+  font-size:10px;opacity:.75;letter-spacing:.20em;text-transform:uppercase;
+  margin-left:6px;min-width:64px;
+}
+.narr-status.active{color:#ff7c7c;opacity:1}
+.narr-status.playing{color:#7cffa0;opacity:1}
+
 /* ===== SLIDES 3 + 4 — globe scenes ===== */
 .slide.globe-scene{
   padding:0;
@@ -179,6 +276,19 @@ strong{font-weight:500;color:var(--ink)}
   position:absolute;inset:0;width:100%;height:100%;
   display:block;
 }
+/* soft cream scrims in the four corners so overlay text stays legible
+   when the globe zooms in and fills the frame with bright earth */
+.slide.globe-scene::before{
+  content:"";
+  position:absolute;inset:0;
+  pointer-events:none;
+  z-index:1;
+  background:
+    radial-gradient(ellipse 48% 38% at 0% 0%,   rgba(239,234,224,.92), rgba(239,234,224,0) 72%),
+    radial-gradient(ellipse 28% 26% at 100% 0%, rgba(239,234,224,.90), rgba(239,234,224,0) 72%),
+    radial-gradient(ellipse 32% 28% at 100% 100%, rgba(239,234,224,.92), rgba(239,234,224,0) 72%),
+    radial-gradient(ellipse 46% 30% at 0% 100%,   rgba(239,234,224,.92), rgba(239,234,224,0) 72%);
+}
 .scene-overlay{
   position:absolute;inset:0;
   pointer-events:none;
@@ -186,6 +296,21 @@ strong{font-weight:500;color:var(--ink)}
   grid-template-rows:auto 1fr auto;
   padding:5vh 6vw 10vh;
   gap:24px;
+  z-index:2;
+}
+/* glow halo behind short, large overlay text — survives even where the
+   scrim is faint. Body-weight text (.talk, .closing) uses a backdrop card
+   instead, because a glow on small italic ink letters smears them. */
+.scene-overlay .eyebrow,
+.scene-overlay .scene-title,
+.scene-overlay .year-ticker,
+.scene-overlay .counter,
+.scene-overlay .progress,
+.scene-overlay .hint{
+  text-shadow:
+    0 1px 2px rgba(239,234,224,.95),
+    0 0 14px rgba(239,234,224,.85),
+    0 0 28px rgba(239,234,224,.55);
 }
 .scene-overlay .top{
   display:flex;justify-content:space-between;align-items:flex-start;gap:40px;
@@ -268,6 +393,10 @@ strong{font-weight:500;color:var(--ink)}
   max-width:58ch;
   font-size:clamp(15px,1.25vw,19px);line-height:1.65;
   opacity:0;transition:opacity 1.2s ease;
+  background:rgba(246,242,232,.88);
+  border-left:2px solid var(--moss);
+  padding:16px 22px;
+  backdrop-filter:blur(3px);
 }
 .scene-overlay .closing.show{opacity:1}
 .scene-overlay .closing em{color:var(--moss-deep)}
@@ -490,32 +619,59 @@ body:not(.talk-visible) .scene-overlay .closing{opacity:0 !important}
     </div>
   </section>
 
-  <!-- SLIDE 4 — globe: After the Forest -->
-  <section class="slide s4 globe-scene" data-slide="4">
-    <canvas class="globe-canvas" id="globe4"></canvas>
-    <div class="scene-overlay">
-      <div class="top">
-        <div>
-          <div class="eyebrow"><span class="dot"></span>IV · After the Forest</div>
-          <div class="scene-title">What can a 400-million-year-old partnership teach a species mobile for two hundred?</div>
-        </div>
+  <!-- SLIDE 4 — comparison: three lichen modes ↔ three human mobilities -->
+  <section class="slide s4" data-slide="4">
+    <div class="compare-head">
+      <div class="eyebrow"><span class="dot"></span>IV · After the Forest</div>
+      <h2>Same patterns, different scales.</h2>
+    </div>
+
+    <div class="compare-table">
+      <!-- header row -->
+      <div class="ct-cell ct-corner"></div>
+      <div class="ct-cell ct-header">
+        <h4>Soredia <span>↔</span> Digital Nomads</h4>
+        <p>Both partners travel as one bundle. Lands anywhere with bandwidth and begins immediately.</p>
       </div>
-      <div class="mid">
-        <div class="talk show" id="s4talk">
-          <em>Lichens are places where an organism unravels into an ecosystem and where an ecosystem congeals into an organism.</em>
-          <span class="src">— Merlin Sheldrake</span>
-        </div>
+      <div class="ct-cell ct-header">
+        <h4>Isidia <span>↔</span> Climate Migration</h4>
+        <p>A fragment of the parent breaks off. Community moves together, shorter distance.</p>
       </div>
-      <div class="bot">
-        <div class="closing show">
-          If we are becoming relationships moving across surfaces, then the question stops being <em>how do we hold ground</em> and starts being <em>how do we hold each other while the ground moves</em>.
-        </div>
-        <div class="hint">End</div>
+      <div class="ct-cell ct-header">
+        <h4>Ascospores <span>↔</span> Global Refugees</h4>
+        <p>Forced dispersal. Must find work, kin, language, legal status on arrival.</p>
       </div>
+
+      <!-- lichen row -->
+      <div class="ct-cell ct-rowlabel"><span>Lichen</span><em>400 Myr</em></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4l0"></canvas></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4l1"></canvas></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4l2"></canvas></div>
+
+      <!-- human row -->
+      <div class="ct-cell ct-rowlabel"><span>Human</span><em>~200 yr</em></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4h0"></canvas></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4h1"></canvas></div>
+      <div class="ct-cell ct-canvas"><canvas id="c4h2"></canvas></div>
+    </div>
+
+    <div class="compare-foot">
+      <em>If we are becoming relationships moving across surfaces, the question stops being <strong>how do we hold ground</strong> and starts being <strong>how do we hold each other while the ground moves</strong>.</em>
     </div>
   </section>
 
 </main>
+
+<!-- narration recording / playback (only visible on slide 3) -->
+<div class="narr-panel" id="narrPanel" aria-label="narration recording">
+  <button class="narr-btn rec" id="narrRec" title="Record narration">●</button>
+  <button class="narr-btn stop hidden" id="narrStop" title="Stop">■</button>
+  <button class="narr-btn play" id="narrPlay" title="Play narration" disabled>▶</button>
+  <button class="narr-btn save" id="narrSave" title="Download narration.webm + narration.json" disabled>⤓</button>
+  <button class="narr-btn load" id="narrLoadBtn" title="Load narration files (audio + JSON)">⤒</button>
+  <input type="file" id="narrLoad" accept="audio/*,.json,.webm" multiple hidden>
+  <span class="narr-status" id="narrStatus">ready</span>
+</div>
 
 <!-- nav -->
 <nav class="nav" aria-label="slide navigation">
@@ -535,10 +691,10 @@ const N = slides.length;
 let cur = 0;
 let auto = false;
 let autoTimer = null;
-const SLIDE_MS = [9000, 14000, 16000, 75000, 25000]; // s3 hosts three sub-scenes
+const SLIDE_MS = [9000, 14000, 16000, 75000, 30000]; // s3 hosts three sub-scenes; s4 is the comparison loop
 
 const dotsEl = document.getElementById('dots');
-const titles = ['Opening','Visual rhyme','Three strategies','Three mobilities','After the forest'];
+const titles = ['Opening','Visual rhyme','Three strategies','Three mobilities','Side by side'];
 slides.forEach((_,i)=>{
   const b=document.createElement('button');
   b.className='dotbtn'+(i===0?' active':'');
@@ -557,14 +713,24 @@ function go(i){
   globeStop();
   if(cur===2) startAnims();
   if(cur===3){ subScene='A'; globeStart(3); }
-  if(cur===4){ globeStart(4); }
+  if(cur===4) startCompare();
+  const np = document.getElementById('narrPanel');
+  if(np) np.classList.toggle('show', cur===3);
   if(auto) scheduleAuto();
 }
 function next(){
-  if(cur===3 && subSceneNext()) return; // step through A/B/C before advancing
+  if(narration && narration.state === 'playing') return; // ignore manual nav during playback
+  if(cur===3){
+    if(globe.scene && globe.scene.advance && globe.scene.advance()){
+      narrCueRecord('advance');
+      return;
+    }
+    if(subSceneNext()) return;   // subSceneSet records its own cue
+  }
   go(cur+1);
 }
 function prev(){
+  if(narration && narration.state === 'playing') return;
   if(cur===3 && subScenePrev()) return;
   go(cur-1);
 }
@@ -657,12 +823,13 @@ function label(ctx,text,x,y,col){
   ctx.textAlign='center';ctx.fillText(text,x,y);
 }
 
-function animSoredia(){
-  const cv=document.getElementById('c0');const {W,H,ctx}=sizeCanvas(cv);
+function animSoredia(canvasId='c0', timerKey='s0'){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
   let frame=0;
   const soralia=[{x:W*0.22,y:H*0.68},{x:W*0.5,y:H*0.67},{x:W*0.78,y:H*0.68}];
   let particles=[];
-  animTimers.s0=setInterval(()=>{
+  animTimers[timerKey]=setInterval(()=>{
     drawBase(ctx,W,H,'#8fbb55');
     soralia.forEach(s=>{
       ctx.fillStyle=SOR;ctx.beginPath();ctx.ellipse(s.x,s.y,14,7,0,0,Math.PI*2);ctx.fill();
@@ -690,12 +857,13 @@ function animSoredia(){
   },33);
 }
 
-function animIsidia(){
-  const cv=document.getElementById('c1');const {W,H,ctx}=sizeCanvas(cv);
+function animIsidia(canvasId='c1', timerKey='s1'){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
   let frame=0;
   const posts=[{x:W*0.2},{x:W*0.37},{x:W*0.54},{x:W*0.71},{x:W*0.87}];
   let flying=[];
-  animTimers.s1=setInterval(()=>{
+  animTimers[timerKey]=setInterval(()=>{
     drawBase(ctx,W,H,'#7abe38');
     const grown=Math.min(1,(frame/60));
     posts.forEach(p=>{drawIsidium(ctx,p.x,H*0.68,16*grown,1)});
@@ -719,14 +887,15 @@ function animIsidia(){
   },33);
 }
 
-function animAscospore(){
-  const cv=document.getElementById('c2');const {W,H,ctx}=sizeCanvas(cv);
+function animAscospore(canvasId='c2', timerKey='s2'){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
   let frame=0;
   const apo=[{x:W*0.25,y:H*0.68},{x:W*0.55,y:H*0.67},{x:W*0.8,y:H*0.68}];
   let spores=[];
   const freeAlgae=[{x:W*0.12,y:35},{x:W*0.45,y:22},{x:W*0.75,y:40},{x:W*0.9,y:18},{x:W*0.3,y:50}];
   let encounters=[];
-  animTimers.s2=setInterval(()=>{
+  animTimers[timerKey]=setInterval(()=>{
     drawBase(ctx,W,H,'#9aaa88');
     apo.forEach(a=>{
       ctx.fillStyle='#7a4830';ctx.beginPath();ctx.ellipse(a.x,a.y,16,7,0,0,Math.PI*2);ctx.fill();
@@ -778,7 +947,377 @@ function animAscospore(){
 }
 
 function startAnims(){stopAnims();animSoredia();animIsidia();animAscospore()}
-window.addEventListener('resize',()=>{if(cur===2){startAnims()}else if(cur===3||cur===4){globeResize()}});
+
+/* ============================================================
+   ========== Mini-globe animations (Slide 4 comparison) =====
+   Stylised 2D world, with migration patterns whose release /
+   detach / encounter beats are aligned with the lichen anims
+   above them so the parallel reads visually, beat for beat. */
+
+function miniGeom(W, H){ return { cx: W/2, cy: H/2, R: Math.min(W, H) * 0.45 }; }
+
+function drawMiniGlobe(ctx, W, H, g){
+  g = g || miniGeom(W, H);
+  // background tile (warm cream, matches lichen anims above)
+  ctx.fillStyle = '#f4f0e8';
+  ctx.fillRect(0, 0, W, H);
+  const { cx, cy, R } = g;
+  // ocean disc with subtle radial shading
+  const gr = ctx.createRadialGradient(cx - R*0.35, cy - R*0.35, 0, cx, cy, R);
+  gr.addColorStop(0, '#243349');
+  gr.addColorStop(1, '#1a2433');
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = gr; ctx.fill();
+  // continents — abstract sage blobs (Americas, Eurasia, Africa, Australia)
+  ctx.fillStyle = '#7a8a6a';
+  ctx.beginPath(); ctx.ellipse(cx - R*0.58, cy - R*0.08, R*0.10, R*0.42, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx - R*0.45, cy + R*0.45, R*0.08, R*0.22, 0.3, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx - R*0.05, cy - R*0.35, R*0.20, R*0.10, -0.08, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + R*0.02, cy + R*0.20, R*0.16, R*0.32, 0.05, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + R*0.42, cy - R*0.22, R*0.36, R*0.20, 0.10, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + R*0.34, cy + R*0.18, R*0.10, R*0.16, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + R*0.58, cy + R*0.42, R*0.14, R*0.07, 0, 0, TAU); ctx.fill();
+  // rim
+  ctx.strokeStyle = 'rgba(0,0,0,.22)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+  // faint equator
+  ctx.strokeStyle = 'rgba(246,242,232,.10)';
+  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
+  return g;
+}
+
+function miniPt(g, fx, fy){ return { x: g.cx + fx * g.R, y: g.cy + fy * g.R }; }
+
+function arcPoint(p0, p1, t){
+  const mx = (p0.x + p1.x)/2;
+  const my = (p0.y + p1.y)/2 - Math.hypot(p1.x - p0.x, p1.y - p0.y) * 0.22;
+  const u = 1 - t;
+  return { x: u*u*p0.x + 2*u*t*mx + t*t*p1.x, y: u*u*p0.y + 2*u*t*my + t*t*p1.y };
+}
+
+function drawMiniBundle(ctx, x, y, alpha){
+  ctx.save(); ctx.globalAlpha = alpha;
+  const grd = ctx.createRadialGradient(x, y, 0, x, y, 7);
+  grd.addColorStop(0, 'rgba(138,111,196,.7)');
+  grd.addColorStop(1, 'rgba(138,111,196,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.fill();
+  ctx.fillStyle = ALG; ctx.fillRect(x-3, y+0.6, 6, 1.6);
+  ctx.fillStyle = FUN;
+  ctx.beginPath(); ctx.arc(x, y-2.2, 1.6, 0, TAU); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x-2.2, y+0.4); ctx.quadraticCurveTo(x, y-1.3, x+2.2, y+0.4);
+  ctx.lineTo(x+2.2, y+0.7); ctx.lineTo(x-2.2, y+0.7); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(138,111,196,.95)'; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(x, y, 3.8, 0, TAU); ctx.stroke();
+  ctx.restore();
+}
+
+function drawMiniPair(ctx, x, y, alpha){
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = ALG; ctx.fillRect(x-2.5, y+0.4, 5, 1.3);
+  ctx.fillStyle = FUN;
+  ctx.beginPath(); ctx.arc(x, y-1.6, 1.3, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function drawMiniSpore(ctx, x, y, alpha){
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#c47a20';
+  ctx.beginPath(); ctx.arc(x, y, 1.7, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function drawMiniAlga(ctx, x, y, alpha){
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = ALG;
+  ctx.beginPath(); ctx.arc(x, y, 1.6, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function drawMiniEncounter(ctx, x, y, alpha){
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = 'rgba(216,68,68,.45)';
+  ctx.beginPath(); ctx.arc(x, y, 4.5, 0, TAU); ctx.fill();
+  ctx.fillStyle = MEET;
+  ctx.beginPath(); ctx.arc(x, y, 2, 0, TAU); ctx.fill();
+  ctx.fillStyle = ALG;
+  ctx.beginPath(); ctx.arc(x - 1.3, y - 0.6, 1.2, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+
+function drawHotZone(ctx, x, y, pulse){
+  const r = 6 + pulse * 4;
+  const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, 'rgba(216,68,68,.7)');
+  gr.addColorStop(1, 'rgba(216,68,68,0)');
+  ctx.fillStyle = gr;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  ctx.fillStyle = MEET;
+  ctx.beginPath(); ctx.arc(x, y, 2.4, 0, TAU); ctx.fill();
+}
+
+function drawCoastFlood(ctx, g, level){
+  ctx.save();
+  ctx.beginPath(); ctx.arc(g.cx, g.cy, g.R, 0, TAU); ctx.clip();
+  ctx.fillStyle = 'rgba(80,130,180,.40)';
+  const top = g.cy + g.R*0.22 - level * g.R * 0.45;
+  ctx.fillRect(g.cx - g.R*1.2, top, g.R*2.4, g.R*1.6);
+  ctx.strokeStyle = 'rgba(140,180,220,.7)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(g.cx - g.R, top); ctx.lineTo(g.cx + g.R, top); ctx.stroke();
+  ctx.restore();
+}
+
+/* ----- Soredia mirror: Digital nomads ----- */
+function animHumanNomad(canvasId, timerKey){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
+  const g = miniGeom(W, H);
+  let frame=0;
+  let bundles=[];
+  const origins = [
+    miniPt(g, -0.55, -0.20),
+    miniPt(g, -0.08, -0.40),
+    miniPt(g, -0.55, +0.30),
+  ];
+  const hubs = [
+    miniPt(g, +0.55, +0.20),
+    miniPt(g, -0.18, -0.18),
+    miniPt(g, -0.45, +0.05),
+    miniPt(g, +0.30, +0.05),
+    miniPt(g, +0.05, +0.10),
+  ];
+  animTimers[timerKey]=setInterval(()=>{
+    drawMiniGlobe(ctx, W, H, g);
+    origins.forEach((o,i)=>{
+      const pulse = 0.5 + 0.5*Math.sin((frame+i*20)/8);
+      ctx.fillStyle = 'rgba(196,122,32,.65)';
+      ctx.beginPath(); ctx.arc(o.x, o.y, 2 + pulse*0.6, 0, TAU); ctx.fill();
+    });
+    hubs.forEach((h,i)=>{
+      const pulse = 0.5 + 0.5*Math.sin((frame+i*30)/12);
+      ctx.fillStyle = 'rgba(138,111,196,.18)';
+      ctx.beginPath(); ctx.arc(h.x, h.y, 4 + pulse*2, 0, TAU); ctx.fill();
+      ctx.fillStyle = 'rgba(138,111,196,.85)';
+      ctx.beginPath(); ctx.arc(h.x, h.y, 1.8, 0, TAU); ctx.fill();
+    });
+    // release every 16 frames after frame 20 — mirrors lichen soredia cadence
+    if(frame%16===0 && frame>20){
+      const o = origins[Math.floor(Math.random()*origins.length)];
+      const h = hubs[Math.floor(Math.random()*hubs.length)];
+      bundles.push({ o, h, t0: frame, dur: 60 + Math.random()*20, settled:false, life:1 });
+    }
+    bundles = bundles.filter(b => b.life > 0);
+    bundles.forEach(b => {
+      const local = frame - b.t0;
+      if(local < b.dur){
+        const prog = local / b.dur;
+        ctx.strokeStyle = 'rgba(138,111,196,.30)';
+        ctx.lineWidth = 0.8; ctx.setLineDash([2,3]);
+        ctx.beginPath();
+        for(let i=0;i<=20;i++){
+          const tt = (i/20)*prog;
+          const p = arcPoint(b.o, b.h, tt);
+          if(i===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+        const p = arcPoint(b.o, b.h, prog);
+        const edge = Math.min(1, prog*6, (1-prog)*6);
+        drawMiniBundle(ctx, p.x, p.y, edge);
+      } else {
+        if(!b.settled){ b.settled = true; b.settleFrame = frame; }
+        const sinceSettle = frame - b.settleFrame;
+        const fade = Math.max(0, 1 - sinceSettle/50);
+        b.life = fade;
+        ctx.save(); ctx.globalAlpha = fade*0.55;
+        const grd = ctx.createRadialGradient(b.h.x, b.h.y, 0, b.h.x, b.h.y, 6 + (1-fade)*8);
+        grd.addColorStop(0, 'rgba(138,111,196,.6)');
+        grd.addColorStop(1, 'rgba(138,111,196,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(b.h.x, b.h.y, 6 + (1-fade)*8, 0, TAU); ctx.fill();
+        ctx.restore();
+        drawMiniPair(ctx, b.h.x, b.h.y, fade);
+      }
+    });
+    frame++; if(frame > 320){ frame = 0; bundles = []; }
+  }, 33);
+}
+
+/* ----- Isidia mirror: Climate migration ----- */
+function animHumanClimate(canvasId, timerKey){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
+  const g = miniGeom(W, H);
+  let frame=0;
+  const sources = [
+    { p: miniPt(g, +0.38, +0.20), dest: miniPt(g, +0.18, -0.05), n: 4 },
+    { p: miniPt(g, +0.55, +0.42), dest: miniPt(g, +0.32, +0.30), n: 3 },
+    { p: miniPt(g, +0.05, +0.30), dest: miniPt(g, -0.10, -0.05), n: 3 },
+  ];
+  let flying=[];
+  animTimers[timerKey]=setInterval(()=>{
+    drawMiniGlobe(ctx, W, H, g);
+    const flood = Math.min(1, frame/180);
+    drawCoastFlood(ctx, g, flood);
+    ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy, g.R, 0, TAU); ctx.stroke();
+    const grown = Math.min(1, frame/40);
+    sources.forEach((s,si) => {
+      for(let i=0;i<s.n;i++){
+        const ang = (i/s.n) * TAU + si;
+        const ox = s.p.x + Math.cos(ang)*3*grown;
+        const oy = s.p.y + Math.sin(ang)*2.5*grown;
+        drawMiniPair(ctx, ox, oy, 0.92);
+      }
+    });
+    // detach at frames 90 and 160 — mirrors lichen isidia detachments
+    if(frame === 90 || frame === 160){
+      sources.forEach((s,si) => {
+        const m = Math.max(2, s.n-1);
+        for(let i=0;i<m;i++){
+          const ang = (i/s.n) * TAU + si;
+          const ox = s.p.x + Math.cos(ang)*3;
+          const oy = s.p.y + Math.sin(ang)*2.5;
+          flying.push({
+            o:{x:ox,y:oy}, h: s.dest,
+            t0: frame, dur: 70 + i*4, settled:false, life:1
+          });
+        }
+      });
+    }
+    flying = flying.filter(b => b.life > 0);
+    flying.forEach(b => {
+      const local = frame - b.t0;
+      if(local < b.dur){
+        const prog = local / b.dur;
+        ctx.strokeStyle = 'rgba(42,138,106,.45)';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        for(let i=0;i<=15;i++){
+          const tt = (i/15)*prog;
+          const pp = arcPoint(b.o, b.h, tt);
+          if(i===0) ctx.moveTo(pp.x, pp.y); else ctx.lineTo(pp.x, pp.y);
+        }
+        ctx.stroke();
+        const p = arcPoint(b.o, b.h, prog);
+        const edge = Math.min(1, prog*6, (1-prog)*6);
+        ctx.save(); ctx.globalAlpha = edge;
+        ctx.fillStyle = 'rgba(42,138,106,.85)';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 2.4, 0, TAU); ctx.fill();
+        ctx.fillStyle = FUN;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, TAU); ctx.fill();
+        ctx.restore();
+      } else {
+        if(!b.settled){ b.settled = true; b.settleFrame = frame; }
+        const sinceSettle = frame - b.settleFrame;
+        const fade = Math.max(0, 1 - sinceSettle/60);
+        b.life = fade;
+        ctx.save(); ctx.globalAlpha = fade*0.5;
+        const grd = ctx.createRadialGradient(b.h.x, b.h.y, 0, b.h.x, b.h.y, 7);
+        grd.addColorStop(0, 'rgba(42,138,106,.7)');
+        grd.addColorStop(1, 'rgba(42,138,106,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(b.h.x, b.h.y, 7, 0, TAU); ctx.fill();
+        ctx.restore();
+        drawMiniPair(ctx, b.h.x, b.h.y, fade);
+      }
+    });
+    frame++; if(frame > 280){ frame = 0; flying = []; }
+  }, 33);
+}
+
+/* ----- Ascospore mirror: Refugees ----- */
+function animHumanRefugee(canvasId, timerKey){
+  const cv=document.getElementById(canvasId);if(!cv) return;
+  const {W,H,ctx}=sizeCanvas(cv);
+  const g = miniGeom(W, H);
+  let frame=0;
+  const zones = [
+    miniPt(g, +0.10, -0.10),
+    miniPt(g, -0.05, -0.32),
+    miniPt(g, +0.25, -0.05),
+  ];
+  const hosts = [
+    miniPt(g, -0.20, -0.30),
+    miniPt(g, -0.05, -0.20),
+    miniPt(g, +0.05, -0.40),
+    miniPt(g, -0.40, -0.10),
+    miniPt(g, -0.50, +0.10),
+    miniPt(g, +0.40, +0.10),
+    miniPt(g, +0.58, +0.42),
+  ];
+  let spores=[];
+  let encounters=[];
+  animTimers[timerKey]=setInterval(()=>{
+    drawMiniGlobe(ctx, W, H, g);
+    zones.forEach((z,i) => {
+      const pulse = 0.5 + 0.5*Math.sin((frame+i*20)/10);
+      drawHotZone(ctx, z.x, z.y, pulse);
+    });
+    hosts.forEach(h => {
+      const inEnc = encounters.some(e => Math.hypot(e.x-h.x, e.y-h.y) < 4);
+      if(!inEnc) drawMiniAlga(ctx, h.x, h.y, 0.9);
+    });
+    // release every 12 frames after frame 15 — mirrors lichen ascospore cadence
+    if(frame%12===0 && frame>15){
+      const z = zones[Math.floor(Math.random()*zones.length)];
+      const ang = Math.random()*TAU;
+      const r2 = g.R * (0.55 + Math.random()*0.4);
+      const tx = g.cx + Math.cos(ang)*r2;
+      const ty = g.cy + Math.sin(ang)*r2;
+      spores.push({
+        x: z.x, y: z.y, tx, ty,
+        t0: frame, dur: 50 + Math.random()*20,
+        settled:false, met:false, life:1
+      });
+    }
+    spores = spores.filter(p => p.life > 0);
+    spores.forEach(p => {
+      const local = frame - p.t0;
+      if(local < p.dur){
+        const prog = local / p.dur;
+        p.x = p.x + (p.tx - p.x) * 0.06;
+        p.y = p.y + (p.ty - p.y) * 0.06;
+        drawMiniSpore(ctx, p.x, p.y, Math.min(1, prog*4));
+      } else {
+        if(!p.settled){
+          p.settled = true; p.settleFrame = frame;
+          const near = hosts.find(h => Math.hypot(h.x - p.x, h.y - p.y) < 12);
+          if(near){
+            p.met = true;
+            encounters.push({ x:(p.x+near.x)/2, y:(p.y+near.y)/2, life:1 });
+          }
+        }
+        const sinceSettle = frame - p.settleFrame;
+        p.life = Math.max(0, 1 - sinceSettle/60);
+        if(!p.met) drawMiniSpore(ctx, p.x, p.y, p.life * 0.7);
+      }
+    });
+    encounters = encounters.filter(e => e.life > 0);
+    encounters.forEach(e => {
+      drawMiniEncounter(ctx, e.x, e.y, Math.min(1, e.life*2));
+      e.life -= 0.012;
+    });
+    frame++; if(frame > 340){ frame = 0; spores = []; encounters = []; }
+  }, 33);
+}
+
+function startCompare(){
+  stopAnims();
+  animSoredia('c4l0','sl0');
+  animIsidia('c4l1','sl1');
+  animAscospore('c4l2','sl2');
+  animHumanNomad('c4h0','h0');
+  animHumanClimate('c4h1','h1');
+  animHumanRefugee('c4h2','h2');
+}
+
+window.addEventListener('resize',()=>{
+  if(cur===2) startAnims();
+  else if(cur===3) globeResize();
+  else if(cur===4) startCompare();
+});
 
 
 /* ============================================================
@@ -1093,6 +1632,58 @@ function drawPoint(lat, lon, opts){
   return p;
 }
 
+/* Nomad bundle — a tiny "person + laptop" glyph wrapped in a soredia-purple
+   halo. Visually rhymes with the soredium drawn in Part II's lichen animation
+   (orange fungus + green alga inside a violet bundle), but reads as a portable
+   worker carrying their tools across the surface of the planet. */
+function drawNomadBundle(lat, lon, opts){
+  const { ctx } = globe;
+  const p = proj(lat, lon);
+  if(!p.visible) return null;
+  const scale = (opts && opts.scale) || 1;
+  const alpha = (opts && opts.alpha) != null ? opts.alpha : 1;
+  const x = p.x, y = p.y;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // soft violet halo — the "bundle" that holds the pair together
+  const haloR = 9 * scale;
+  const grd = ctx.createRadialGradient(x, y, 0, x, y, haloR);
+  grd.addColorStop(0, 'rgba(138,111,196,.55)');
+  grd.addColorStop(1, 'rgba(138,111,196,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(x, y, haloR, 0, TAU); ctx.fill();
+
+  // laptop body (alga green) — the tool/partner
+  const lw = 6 * scale, lh = 1.6 * scale;
+  ctx.fillStyle = '#5a9e28';
+  ctx.fillRect(x - lw/2, y + 1.1*scale, lw, lh);
+  // laptop screen (darker green)
+  ctx.fillStyle = '#3e5238';
+  ctx.fillRect(x - lw/2 + 0.6*scale, y + 1.5*scale, lw - 1.2*scale, lh - 0.6*scale);
+
+  // person — head + shoulders, in fungus orange
+  ctx.fillStyle = '#c47a20';
+  // head
+  ctx.beginPath(); ctx.arc(x, y - 2.4*scale, 1.7*scale, 0, TAU); ctx.fill();
+  // shoulders
+  ctx.beginPath();
+  ctx.moveTo(x - 2.4*scale, y + 0.9*scale);
+  ctx.quadraticCurveTo(x, y - 1.6*scale, x + 2.4*scale, y + 0.9*scale);
+  ctx.lineTo(x + 2.4*scale, y + 1.1*scale);
+  ctx.lineTo(x - 2.4*scale, y + 1.1*scale);
+  ctx.closePath(); ctx.fill();
+
+  // soredia ring — the violet outline that says "this is a bundle"
+  ctx.strokeStyle = 'rgba(138,111,196,.95)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(x, y, 5.2*scale, 0, TAU); ctx.stroke();
+
+  ctx.restore();
+  return p;
+}
+
 /* Filled disc on sphere (for bloom / heat regions) */
 function drawBloom(lat, lon, radiusDeg, color){
   // approximate by drawing a small set of points around the centre
@@ -1176,6 +1767,7 @@ function subSceneSet(s){
     globe.scene.init && globe.scene.init();
     globe.t0 = performance.now();
   }
+  narrCueRecord('subscene', s);
 }
 function subSceneNext(){
   const order=['A','B','C'];
@@ -1363,42 +1955,68 @@ function scene3(which){
   return sceneNomads();
 }
 
-/* -------- Scene A — Digital nomads -------- */
+/* -------- Scene A — Digital nomads (phase-driven) -------- */
 function sceneNomads(){
   setEyebrow('III · Three Mobilities · A · Soredia ↔ Digital Nomads');
   setTitle('A person, a laptop, a network — <em>moving as a bundle</em>.');
   setYear('', '', false);
   setCounter('', '', false);
 
-  let phase = 0;          // staged reveals
-  const arcs = [];        // active travel arcs
-  const visaT0 = 8000;    // when visa-country dots start appearing
-  const arcT0 = 3000;     // when arcs start
+  const arcs = [];
+  const visaT0 = 6000;
 
-  // pair each origin with several hubs as travel arcs
   NOMAD_ORIGINS.forEach((o, oi) => {
     NOMAD_HUBS.forEach((h, hi) => {
-      if((oi + hi) % 3 !== 0) return; // sparse — not every pair
+      if((oi + hi) % 3 !== 0) return;
       arcs.push({
         a: o, b: h,
-        spawnT: 3000 + Math.random()*16000,
+        spawnT: 2000 + Math.random()*14000,
         durT: 3500 + Math.random()*1800,
       });
     });
   });
 
-  // initial camera: looking at Europe / Africa, sphere centred
   tweenCam(30, 5, Math.min(globe.W, globe.H) * 0.45, 1600);
-  globe.rotateSpeed = 1.2;  // very slow drift east
+  globe.rotateSpeed = 1.2;
   hidePhoto();
-
   setTalk(
     'Like soredia, the digital nomad carries both partners in one package — themselves and their tools. Sixty-plus countries now offer a visa designed for exactly this kind of traveller.',
     'MBO Partners, <em>State of Independence</em> 2023; Nomad List 2024'
   );
 
+  let phase = 0;
+  const phaseActions = [
+    null,
+    ()=>{
+      globe.rotateSpeed = 0;
+      tweenCam(38.7, -9.1, Math.min(globe.W,globe.H)*0.95, 2200);
+      setTalk(
+        'The Estonia visa launched in 2020. Within four years the policy spread to Lisbon, Bali, Tbilisi, Mexico City, Buenos Aires — a global infrastructure built for a worker who arrives, plugs in, and begins.',
+        'Government immigration pages 2020–2024'
+      );
+      showPhoto('lisbon', 'Lisbon, Portugal', '~16k nomad-visa holders by 2024');
+    },
+    ()=>{
+      hidePhoto();
+      tweenCam(10, 60, Math.min(globe.W,globe.H)*0.45, 2400);
+      globe.rotateSpeed = 0.6;
+      setTalk(
+        'Self-contained, high-dispersal, low ties to substrate. The lichen reads this and recognises itself.',
+        ''
+      );
+    },
+  ];
+
   return {
     init(){},
+    advance(){
+      if(phase < phaseActions.length - 1){
+        phase++;
+        phaseActions[phase] && phaseActions[phase]();
+        return true;
+      }
+      return false;
+    },
     draw(t){
       const { ctx } = globe;
 
@@ -1413,39 +2031,60 @@ function sceneNomads(){
         ctx.restore();
       });
 
-      // 2) nomad arcs
+      // 2) nomad arcs — soredia bundles in flight (person + laptop, wrapped
+      //    in a violet halo) drifting along great circles, mirroring the
+      //    parent-thallus → soredium dispersal in Part II's animation.
       arcs.forEach(a => {
         const local = t - a.spawnT;
         if(local < 0 || local > a.durT + 1800) return;
         const prog = Math.max(0, Math.min(1, local / a.durT));
-        // arc line
+        // arc line — soredia purple, faint
         ctx.save();
-        ctx.strokeStyle = 'rgba(62,82,56,.78)'; // moss-deep
-        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = 'rgba(138,111,196,.55)';
+        ctx.lineWidth = 1.1;
+        ctx.setLineDash([3, 4]);
         drawGreatArc(a.a.lat, a.a.lon, a.b.lat, a.b.lon, { t: prog });
         ctx.restore();
-        // moving dot
+        // release pulse at the origin — the parent "shedding" a bundle
+        if(local < 600){
+          const releaseAlpha = 1 - local/600;
+          ctx.save(); ctx.globalAlpha = releaseAlpha * 0.7;
+          drawPoint(a.a.lat, a.a.lon, {
+            r: 2, halo: 4 + (1-releaseAlpha)*8,
+            color: 'rgba(196,122,32,.9)',
+            haloColor: 'rgba(196,122,32,.18)'
+          });
+          ctx.restore();
+        }
+        // travelling bundle — the soredium itself
         if(prog > 0 && prog < 1){
           const [lat, lon] = gcInterp(a.a.lat, a.a.lon, a.b.lat, a.b.lon, prog);
-          drawPoint(lat, lon, { r: 2.2, color: 'rgba(62,82,56,1)' });
+          // small fade-in / fade-out so bundles don't pop
+          const edgeFade = Math.min(1, prog*8, (1-prog)*8);
+          drawNomadBundle(lat, lon, { scale: 0.9, alpha: edgeFade });
         }
-        // arrival pulse
+        // arrival pulse — "new colony" lands, violet halo blooms then fades
         if(prog >= 1){
           const fade = Math.max(0, 1 - (local - a.durT)/1500);
-          ctx.save(); ctx.globalAlpha = fade;
-          drawPoint(a.b.lat, a.b.lon, { r: 3, halo: 8 + (1-fade)*10, color:'rgba(62,82,56,.85)' });
+          drawNomadBundle(a.b.lat, a.b.lon, { scale: 1, alpha: fade });
+          ctx.save(); ctx.globalAlpha = fade * 0.6;
+          drawPoint(a.b.lat, a.b.lon, {
+            r: 2, halo: 6 + (1-fade)*14,
+            color: 'rgba(138,111,196,0)',
+            haloColor: 'rgba(138,111,196,.25)'
+          });
           ctx.restore();
         }
       });
 
-      // 3) hub dots — always on, sized by relative magnitude
+      // 3) hub dots — "established colonies", soredia-violet halos that pulse
       NOMAD_HUBS.forEach(h => {
         const pulse = 0.5 + 0.5 * Math.sin((t/700) + h.lat);
         drawPoint(h.lat, h.lon, {
-          r: 2 + h.size*1.1,
+          r: 1.8 + h.size*0.9,
           color:'rgba(62,82,56,.9)',
-          halo: 4 + pulse*4,
-          haloColor:'rgba(90,112,80,.18)'
+          halo: 4 + pulse*5,
+          haloColor:'rgba(138,111,196,.22)'
         });
       });
 
@@ -1462,29 +2101,7 @@ function sceneNomads(){
       // 5) running counter — "35M estimated digital nomads worldwide (2023)"
       const cnt = Math.floor(Math.min(35000000, 35000000 * Math.min(1, t/9000)));
       setCounter(fmtNum(cnt), 'estimated digital nomads · 2023', t > 1500);
-
-      // 6) phase changes — second annotation after 14s, with a Lisbon zoom
-      if(phase===0 && t > 14000){
-        phase = 1;
-        globe.rotateSpeed = 0;
-        tweenCam(38.7, -9.1, Math.min(globe.W,globe.H)*0.95, 2200);
-        setTalk(
-          'The Estonia visa launched in 2020. Within four years the policy spread to Lisbon, Bali, Tbilisi, Mexico City, Buenos Aires — a global infrastructure built for a worker who arrives, plugs in, and begins.',
-          'Government immigration pages 2020–2024'
-        );
-        showPhoto('lisbon', 'Lisbon, Portugal', '~16k nomad-visa holders by 2024');
-      }
-      if(phase===1 && t > 22000){
-        phase = 2;
-        hidePhoto();
-        tweenCam(10, 60, Math.min(globe.W,globe.H)*0.45, 2400);
-        globe.rotateSpeed = 0.6;
-        setTalk(
-          'Self-contained, high-dispersal, low ties to substrate. The lichen reads this and recognises itself.',
-          ''
-        );
-      }
-    }
+    },
   };
 }
 
@@ -1494,125 +2111,106 @@ function sceneClimate(){
   setTitle('Whole communities — <em>a piece of the parent</em> moves.');
   globe.rotateSpeed = 0;
 
-  // Each phase is a chapter in the climate tour. Numbers are real;
-  // sources are cited inline so the audience sees them with the visual.
   const phases = [
-    { dur:8000,
-      cam:{lat:-3, lon:177, Rfrac:0.95, tw:2200},
-      year:{a:2026,b:2034},
-      counter:{a:0,b:15},
+    { cam:{lat:-3, lon:177, Rfrac:0.95, tw:2200},
+      year:{a:2026,b:2034}, counter:{a:0,b:15},
       talk:'The lichen analogy starts to crack — for some places there is no substrate left. Tuvalu, Kiribati, and the Marshall Islands sit at a median elevation under two metres above sea level.',
       src:'IPCC AR6 WG1 (2021); Tuvalu COP26 statement 2021',
       photo:{slug:'tuvalu', name:'Tuvalu — Funafuti', meta:'Pacific Ocean · median elevation <2m'},
-      blooms:[{lat:-8,lon:179,r:4,name:'Tuvalu',at:600},
-              {lat:1.4,lon:173,r:4,name:'Kiribati',at:1900},
-              {lat:7,lon:171,r:5,name:'Marshall Is.',at:3200}],
+      blooms:[{lat:-8,lon:179,r:4,name:'Tuvalu'},
+              {lat:1.4,lon:173,r:4,name:'Kiribati'},
+              {lat:7,lon:171,r:5,name:'Marshall Is.'}],
     },
-    { dur:7000,
-      cam:{lat:4, lon:73.5, Rfrac:1.05, tw:2200},
-      year:{a:2034,b:2040},
-      counter:{a:15,b:35},
+    { cam:{lat:4, lon:73.5, Rfrac:1.05, tw:2200},
+      year:{a:2034,b:2040}, counter:{a:15,b:35},
       talk:'The Maldives — 80% of land below one metre. A nation that has begun buying sovereign land in Australia as climate insurance.',
       src:'NASA Sea Level Change; Maldives–Australia Falepili-style accord, 2023',
       photo:{slug:'maldives', name:'Maldives', meta:'80% of land < 1m above sea level'},
-      blooms:[{lat:4.1,lon:73.5,r:6,name:'Maldives',at:800}],
+      blooms:[{lat:4.1,lon:73.5,r:6,name:'Maldives'}],
     },
-    { dur:8000,
-      cam:{lat:23, lon:90, Rfrac:1.00, tw:2200},
-      year:{a:2040,b:2046},
-      counter:{a:35,b:95},
+    { cam:{lat:23, lon:90, Rfrac:1.00, tw:2200},
+      year:{a:2040,b:2046}, counter:{a:35,b:95},
       talk:'The Bangladesh delta — roughly seventeen million people in the path of submersion. South Asia: <strong>up to 40M</strong> internal climate migrants by 2050.',
       src:'World Bank, <em>Groundswell Part II</em> 2021',
       photo:{slug:'bangladesh-delta', name:'Bangladesh delta', meta:'~17M people exposed to submersion'},
-      blooms:[{lat:23,lon:90,r:7,name:'Bangladesh delta',at:800},
-              {lat:11,lon:79,r:5,name:'Tamil Nadu',at:2400}],
+      blooms:[{lat:23,lon:90,r:7,name:'Bangladesh delta'},
+              {lat:11,lon:79,r:5,name:'Tamil Nadu'}],
     },
-    { dur:7500,
-      cam:{lat:25, lon:60, Rfrac:0.90, tw:2200},
-      year:{a:2046,b:2050},
-      counter:{a:95,b:160},
+    { cam:{lat:25, lon:60, Rfrac:0.90, tw:2200},
+      year:{a:2046,b:2050}, counter:{a:95,b:160},
       talk:'Across the Persian Gulf and the Indus Valley: periodic <em>wet-bulb 35°C events</em> — the threshold past which a healthy person in shade dies of heat within hours. Habitability becomes seasonal.',
       src:'Pal &amp; Eltahir, <em>Nature Climate Change</em> 2016; Im et al., <em>Science Advances</em> 2017',
       photo:{slug:'persian-gulf', name:'Persian Gulf & Indus Valley', meta:'wet-bulb 35°C threshold projected'},
-      blooms:[{lat:26,lon:50,r:7,name:'Persian Gulf',at:600},
-              {lat:28,lon:69,r:7,name:'Indus Valley',at:2100},
-              {lat:27,lon:80,r:6,name:'Ganges plain',at:3500}],
+      blooms:[{lat:26,lon:50,r:7,name:'Persian Gulf'},
+              {lat:28,lon:69,r:7,name:'Indus Valley'},
+              {lat:27,lon:80,r:6,name:'Ganges plain'}],
     },
-    { dur:8500,
-      cam:{lat:12, lon:15, Rfrac:0.85, tw:2200},
-      year:{a:2050,b:2050},
-      counter:{a:160,b:216},
+    { cam:{lat:12, lon:15, Rfrac:0.85, tw:2200},
+      year:{a:2050,b:2050}, counter:{a:160,b:216},
       talk:'Sub-Saharan Africa: up to <strong>86M</strong> internal climate migrants by 2050 — the largest of the six World Bank regions. The Sahel desertifies, Lake Chad shrinks, and people move by community, not by individual.',
       src:'World Bank, <em>Groundswell Part II</em> 2021',
       photo:{slug:'sahel', name:'Sahel & Lake Chad basin', meta:'~86M projected internal migrants'},
-      blooms:[{lat:14,lon:0,r:8,name:'Sahel',at:600},
-              {lat:13,lon:14,r:6,name:'Lake Chad basin',at:2000},
-              {lat:-15,lon:30,r:7,name:'Southern Africa',at:3600}],
+      blooms:[{lat:14,lon:0,r:8,name:'Sahel'},
+              {lat:13,lon:14,r:6,name:'Lake Chad basin'},
+              {lat:-15,lon:30,r:7,name:'Southern Africa'}],
     },
   ];
-  let acc = 0;
-  phases.forEach(p => { p.at = acc; acc += p.dur; });
-  const total = acc;
 
-  // initial UI state
   setYear(2026, 'year', true);
   setCounter('0', 'projected internal climate migrants · by 2050', true);
-  setTalk(phases[0].talk, phases[0].src);
 
   let curPhase = -1;
+  let phaseStartedAt = 0;
+  const ANIM_SEC = 3.5;
   const blooms = [];
+
+  function applyPhase(i){
+    curPhase = i;
+    const p = phases[i];
+    const base = Math.min(globe.W, globe.H);
+    tweenCam(p.cam.lat, p.cam.lon, base * p.cam.Rfrac, p.cam.tw);
+    setTalk(p.talk, p.src);
+    if(p.photo) showPhoto(p.photo.slug, p.photo.name, p.photo.meta);
+    else hidePhoto();
+    p.blooms.forEach((b, bi) => {
+      const key = i + ':' + b.name;
+      if(!blooms.find(x => x.key === key)){
+        blooms.push({ ...b, key, armedAt: performance.now() + bi * 700 });
+      }
+    });
+    phaseStartedAt = performance.now();
+  }
+  applyPhase(0);
 
   return {
     init(){},
+    advance(){
+      if(curPhase < phases.length - 1){ applyPhase(curPhase + 1); return true; }
+      return false;
+    },
     draw(t){
-      const tc = Math.min(t, total + 4000);
-      let pi = 0;
-      for(let i=0;i<phases.length;i++){ if(tc >= phases[i].at) pi = i; else break; }
-      const p = phases[pi];
-      const localT = tc - p.at;
-      const localProg = Math.max(0, Math.min(1, localT / p.dur));
-
-      if(pi !== curPhase){
-        curPhase = pi;
-        const base = Math.min(globe.W, globe.H);
-        tweenCam(p.cam.lat, p.cam.lon, base * p.cam.Rfrac, p.cam.tw);
-        setTalk(p.talk, p.src);
-        if(p.photo) showPhoto(p.photo.slug, p.photo.name, p.photo.meta);
-        else hidePhoto();
-      }
-
-      const year = Math.round(p.year.a + (p.year.b - p.year.a) * localProg);
+      const p = phases[curPhase];
+      const elapsed = (performance.now() - phaseStartedAt) / 1000;
+      const prog = Math.max(0, Math.min(1, elapsed / ANIM_SEC));
+      const year = Math.round(p.year.a + (p.year.b - p.year.a) * prog);
       setYear(year, 'year', true);
-      const cval = Math.round((p.counter.a + (p.counter.b - p.counter.a) * localProg) * 1e6);
+      const cval = Math.round((p.counter.a + (p.counter.b - p.counter.a) * prog) * 1e6);
       setCounter(fmtNum(cval), 'projected internal climate migrants · by 2050', true);
 
-      // accumulate blooms that have armed
-      phases.slice(0, pi+1).forEach((ph, i) => {
-        ph.blooms.forEach(b => {
-          const armed = (i === pi && localT >= b.at) || (i < pi);
-          const key = i+':'+b.name;
-          if(armed && !blooms.find(x=>x.key===key)){
-            blooms.push({...b, key, armedT: t});
-          }
-        });
-      });
-
-      // draw blooms
       const ctx = globe.ctx;
+      const now = performance.now();
       blooms.forEach(b => {
-        const age = (t - b.armedT) / 1000;
+        if(now < b.armedAt) return;
+        const age = (now - b.armedAt) / 1000;
         const grow = Math.min(1, age * 1.1);
         const pulse = 0.65 + 0.35 * Math.sin(age * 1.8);
         const rDeg = b.r * grow;
-        if(rDeg > 0){
-          drawBloom(b.lat, b.lon, rDeg, `rgba(216,68,68,${0.50 * pulse})`);
-        }
+        if(rDeg > 0) drawBloom(b.lat, b.lon, rDeg, `rgba(216,68,68,${0.50 * pulse})`);
         drawPoint(b.lat, b.lon, { r: 2.5, color:'rgba(184,40,40,1)' });
         const pp = proj(b.lat, b.lon);
         if(pp.visible){
           const lblAlpha = Math.min(1, age * 0.8);
-          ctx.save();
-          ctx.globalAlpha = lblAlpha;
+          ctx.save(); ctx.globalAlpha = lblAlpha;
           ctx.font = '11px ui-sans-serif,system-ui,sans-serif';
           ctx.fillStyle = 'rgba(43,42,36,.95)';
           ctx.textAlign = 'left';
@@ -1704,114 +2302,119 @@ function sceneWar(){
     return displaced[displaced.length-1][1];
   }
 
-  const tStart = 2000, tEnd = 2026;
-  const introMs = 1800;
-  const scrubMs = 24000;
   const base = Math.min(globe.W, globe.H);
-
   tweenCam(28, 38, base*0.50, 1800);
   setYear(2000, 'year', true);
   setCounter(fmtNum(21800000), 'forcibly displaced · 2000', true);
   hidePhoto();
-  setTalk(
-    'From 2000 to 2024, the count of people forcibly displaced from home roughly <strong>quintupled</strong> — from 21.8 million to 122.6 million. We watch them arrive city by city, year by year.',
-    'UNHCR <em>Global Trends</em> 2024'
-  );
 
-  let talkPhase = 0;
-  let lastCamYear = 2000;
+  // 4 narrative phases driven by → press
+  const phases = [
+    {
+      yearGoal: 2000,
+      cam: { lat: 28, lon: 38, Rfrac: 0.50, tw: 1600 },
+      talk: {
+        body: 'From 2000 to 2024, the count of people forcibly displaced from home roughly <strong>quintupled</strong> — from 21.8 million to 122.6 million. We watch them arrive city by city, year by year.',
+        src:  'UNHCR <em>Global Trends</em> 2024'
+      },
+      scrubSec: 0,
+    },
+    {
+      yearGoal: 2014,
+      cam: { lat: 33.5, lon: 36.3, Rfrac: 0.95, tw: 2400 },
+      talk: {
+        body: 'Syria, 2011. The single largest refugee outflow of the century — six and a half million people, scattered across Turkey, Lebanon, Jordan, Germany. Like the ascospore: each person must find work, kin, language, legal status in a place where none of those things were already arranged for them.',
+        src:  'UNHCR <em>Global Trends</em> 2024'
+      },
+      photo: { slug:'aleppo', name:'Aleppo, Syria', meta:'2011 · ~13.4M displaced — the largest of the century' },
+      scrubSec: 6,
+    },
+    {
+      yearGoal: 2024,
+      cam: { lat: 50.4, lon: 30.5, Rfrac: 0.95, tw: 2400 },
+      talk: {
+        body: 'Ukraine, 2022. Six million people across the EU within weeks — a continental immune response that absorbed a partial nation. Sudan and Gaza follow in 2023.',
+        src:  'UNHCR <em>Global Trends</em> 2024; ACLED'
+      },
+      photo: { slug:'kyiv', name:'Kyiv, Ukraine', meta:'2022 · ~6M to the EU within weeks' },
+      scrubSec: 6,
+    },
+    {
+      yearGoal: 2026,
+      cam: { lat: 28, lon: 38, Rfrac: 0.50, tw: 2400 },
+      talk: {
+        body: 'One in 67 people on Earth is now forcibly displaced. Forced dispersal without supporting ecology — the riskiest bet a lichen makes, repeated at planetary scale.',
+        src:  'UNHCR <em>Global Trends</em> 2024'
+      },
+      hidePhoto: true,
+      scrubSec: 3,
+    },
+  ];
+
+  let curPhase = -1;
+  let phaseStartedAt = 0;
+  let yearStart = 2000;
+  const armed = {}; // conflict index -> performance.now() when first armed
+
+  function applyPhase(i){
+    curPhase = i;
+    const p = phases[i];
+    const base = Math.min(globe.W, globe.H);
+    tweenCam(p.cam.lat, p.cam.lon, base * p.cam.Rfrac, p.cam.tw);
+    setTalk(p.talk.body, p.talk.src);
+    if(p.photo) showPhoto(p.photo.slug, p.photo.name, p.photo.meta);
+    if(p.hidePhoto) hidePhoto();
+    yearStart = (i === 0) ? p.yearGoal : phases[i-1].yearGoal;
+    phaseStartedAt = performance.now();
+  }
+  applyPhase(0);
 
   return {
     init(){},
+    advance(){
+      if(curPhase < phases.length - 1){ applyPhase(curPhase + 1); return true; }
+      return false;
+    },
     draw(t){
-      const after = Math.max(0, t - introMs);
-      const prog = Math.min(1, after / scrubMs);
-      const year = Math.round(tStart + (tEnd - tStart) * prog);
+      const p = phases[curPhase];
+      const elapsed = (performance.now() - phaseStartedAt) / 1000;
+      const prog = p.scrubSec > 0 ? Math.max(0, Math.min(1, elapsed / p.scrubSec)) : 1;
+      const year = Math.round(yearStart + (p.yearGoal - yearStart) * prog);
       setYear(year, 'year', true);
-
       const dval = Math.round(displacedAt(year) * 1e6);
       setCounter(fmtNum(dval), 'forcibly displaced · ' + year, true);
 
-      // Talk phases — switch as new conflicts come into view
-      if(talkPhase===0 && year >= 2011){
-        talkPhase = 1;
-        setTalk(
-          'Syria, 2011. The single largest refugee outflow of the century — six and a half million people, scattered across Turkey, Lebanon, Jordan, Germany. Like the ascospore: each person must find work, kin, language, legal status in a place where none of those things were already arranged for them.',
-          'UNHCR <em>Global Trends</em> 2024'
-        );
-      } else if(talkPhase===1 && year >= 2022){
-        talkPhase = 2;
-        setTalk(
-          'Ukraine, 2022. Six million people across the EU within weeks — a continental immune response that absorbed a partial nation. Sudan and Gaza follow in 2023.',
-          'UNHCR <em>Global Trends</em> 2024; ACLED'
-        );
-      } else if(talkPhase===2 && year >= 2025){
-        talkPhase = 3;
-        setTalk(
-          'One in 67 people on Earth is now forcibly displaced. Forced dispersal without supporting ecology — the riskiest bet a lichen makes, repeated at planetary scale.',
-          'UNHCR <em>Global Trends</em> 2024'
-        );
-      }
-
-      // Pan + zoom toward each new major conflict as it comes online.
-      const active = conflicts.filter(c => c.y <= year);
-      if(active.length > 0 && year !== lastCamYear && !globe.tween){
-        const last = active[active.length-1];
-        // if the most recent onset is in this year, fly to it
-        const justArrived = last.y === year;
-        if(justArrived){
-          const base = Math.min(globe.W, globe.H);
-          tweenCam(last.lat, last.lon, base * 0.95, 2400);
-          if(last.photo) showPhoto(last.photo.slug, last.photo.name, last.photo.meta);
-        } else {
-          // gentle drift toward centroid of last 3
-          const recent = active.slice(-3);
-          const avgLat = recent.reduce((s,c)=>s+c.lat,0)/recent.length;
-          const avgLon = recent.reduce((s,c)=>s+c.lon,0)/recent.length;
-          if(Math.abs(globe.cam.lat - avgLat) > 10 || Math.abs(globe.cam.lon - avgLon) > 12){
-            tweenCam(avgLat, avgLon, globe.R, 2400);
-          }
-        }
-        lastCamYear = year;
-      }
-
-      // Draw conflicts that have onset
       const ctx = globe.ctx;
-      active.forEach(c => {
-        const onsetProg = (c.y - tStart) / (tEnd - tStart);
-        const age = after - onsetProg * scrubMs;
-        if(age <= 0) return;
-        const ageS = age / 1000;
+      const now = performance.now();
+      conflicts.forEach((c, ci) => {
+        if(c.y > year) return;
+        if(!(ci in armed)) armed[ci] = now;
+        const ageS = (now - armed[ci]) / 1000;
         const grow = Math.min(1, ageS * 1.1);
         const pulse = 0.65 + 0.35 * Math.sin(ageS * 1.6);
         const rDeg = (3 + c.scale * 0.7) * grow;
         drawBloom(c.lat, c.lon, rDeg, `rgba(216,68,68,${0.55 * pulse})`);
         drawPoint(c.lat, c.lon, { r: 2.6, color:'rgba(184,40,40,1)' });
-
         const pp = proj(c.lat, c.lon);
         if(pp.visible){
           const lblAlpha = Math.min(1, ageS * 0.7);
-          ctx.save();
-          ctx.globalAlpha = lblAlpha;
+          ctx.save(); ctx.globalAlpha = lblAlpha;
           ctx.font = '11px ui-sans-serif,system-ui,sans-serif';
           ctx.fillStyle = 'rgba(43,42,36,.95)';
           ctx.textAlign = 'left';
           ctx.fillText(c.n + ' · ' + c.y, pp.x + 10, pp.y - 6);
           ctx.restore();
         }
-
-        // outflow arcs — staggered, each destination a separate arc
         c.flowTo.forEach((dest, i) => {
           const arcDelay = 0.7 + i * 0.45;
           const arcAge = ageS - arcDelay;
           if(arcAge < 0) return;
           const arcProg = Math.max(0, Math.min(1, arcAge / 2.5));
           ctx.save();
-          ctx.strokeStyle = `rgba(184,130,90,${0.65 * Math.min(1,arcProg*1.4)})`; // --terra
+          ctx.strokeStyle = `rgba(184,130,90,${0.65 * Math.min(1,arcProg*1.4)})`;
           ctx.lineWidth = 1.2;
           drawGreatArc(c.lat, c.lon, dest[0], dest[1], { t: arcProg });
           ctx.restore();
-          // arrival dot
           if(arcProg > 0.98){
             drawPoint(dest[0], dest[1], { r: 2.5, color:'rgba(184,130,90,1)', halo:6, haloColor:'rgba(184,130,90,.18)' });
           }
@@ -1822,6 +2425,191 @@ function sceneWar(){
 }
 
 window.addEventListener('resize',()=>{ if(globe.slide) globeResize(); });
+
+/* ============================================================
+   ========== Narration recording / playback (Slide 3) =======
+   ============================================================
+   Captures the user's mic and the timestamp of every → press
+   (advance + subscene transition). Playback replays the audio
+   and re-fires those cues at the same offsets — animations
+   match the voice like a video. */
+
+const narration = {
+  state: 'idle',           // idle | recording | playing
+  recorder: null, chunks: [], recStart: 0,
+  events: [],              // live during recording
+  storedEvents: [],        // last recorded / loaded set
+  audioBlob: null, audioUrl: null,
+  audio: null, scheduled: [],
+};
+
+try{
+  const saved = localStorage.getItem('narr_events');
+  if(saved) narration.storedEvents = JSON.parse(saved);
+} catch(e){}
+
+function narrCueRecord(type, value){
+  if(narration.state !== 'recording') return;
+  narration.events.push({ t: performance.now() - narration.recStart, type, value });
+}
+
+function narrSyncUI(){
+  const rec = document.getElementById('narrRec');
+  const stop = document.getElementById('narrStop');
+  const play = document.getElementById('narrPlay');
+  const save = document.getElementById('narrSave');
+  const status = document.getElementById('narrStatus');
+  if(!rec) return;
+  if(narration.state === 'idle'){
+    rec.classList.remove('hidden');
+    stop.classList.add('hidden');
+    play.disabled = !narration.audioBlob;
+    save.disabled = !narration.audioBlob;
+    let label = 'ready';
+    if(narration.audioBlob) label = `loaded · ${narration.storedEvents.length} cues`;
+    else if(narration.storedEvents.length) label = `${narration.storedEvents.length} cues · no audio`;
+    status.textContent = label;
+    status.className = 'narr-status';
+  } else if(narration.state === 'recording'){
+    rec.classList.add('hidden');
+    stop.classList.remove('hidden');
+    play.disabled = true;
+    save.disabled = true;
+    status.textContent = '● rec · ' + narration.events.length;
+    status.className = 'narr-status active';
+  } else if(narration.state === 'playing'){
+    rec.classList.add('hidden');
+    stop.classList.remove('hidden');
+    play.disabled = true;
+    save.disabled = true;
+    status.textContent = '▶ playing';
+    status.className = 'narr-status playing';
+  }
+}
+
+async function narrStartRec(){
+  if(narration.state !== 'idle') return;
+  if(typeof MediaRecorder === 'undefined' || !navigator.mediaDevices){
+    alert('Recording not supported in this browser.'); return;
+  }
+  if(auto){ document.getElementById('autoBtn').click(); }
+  let stream;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e){
+    alert('Microphone access denied: ' + e.message); return;
+  }
+  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+  narration.recorder = new MediaRecorder(stream, { mimeType: mime });
+  narration.chunks = [];
+  narration.events = [];
+  narration.recorder.ondataavailable = e => { if(e.data && e.data.size) narration.chunks.push(e.data); };
+  narration.recorder.onstop = ()=>{
+    narration.audioBlob = new Blob(narration.chunks, { type: mime });
+    if(narration.audioUrl) URL.revokeObjectURL(narration.audioUrl);
+    narration.audioUrl = URL.createObjectURL(narration.audioBlob);
+    narration.storedEvents = narration.events.slice();
+    try{ localStorage.setItem('narr_events', JSON.stringify(narration.storedEvents)); } catch(e){}
+    stream.getTracks().forEach(t => t.stop());
+    narration.state = 'idle';
+    narrSyncUI();
+  };
+  // reset to slide 3 / subscene A so the recording starts from a known state
+  if(cur !== 3) go(3); else subSceneSet('A');
+  narration.recStart = performance.now();
+  narration.state = 'recording';
+  narration.recorder.start();
+  narrSyncUI();
+}
+
+function narrStopRec(){
+  if(narration.state === 'recording'){
+    try{ narration.recorder.stop(); } catch(e){}
+  } else if(narration.state === 'playing'){
+    narrStopPlay();
+  }
+}
+
+function narrStartPlay(){
+  if(narration.state !== 'idle' || !narration.audioBlob) return;
+  if(cur !== 3) go(3); else subSceneSet('A');
+  narration.audio = new Audio(narration.audioUrl);
+  narration.audio.onended = ()=> narrStopPlay();
+  narration.audio.onerror = ()=> narrStopPlay();
+  narration.state = 'playing';
+  narrSyncUI();
+  const playPromise = narration.audio.play();
+  const schedule = ()=>{
+    narration.scheduled = narration.storedEvents.map(ev => setTimeout(()=>{
+      if(ev.type === 'advance'){
+        globe.scene && globe.scene.advance && globe.scene.advance();
+      } else if(ev.type === 'subscene'){
+        subSceneSet(ev.value);
+      }
+    }, ev.t));
+  };
+  if(playPromise && playPromise.then){
+    playPromise.then(schedule).catch(err => { alert('Playback failed: '+err.message); narrStopPlay(); });
+  } else schedule();
+}
+
+function narrStopPlay(){
+  if(narration.audio){ try{ narration.audio.pause(); }catch(e){} narration.audio = null; }
+  narration.scheduled.forEach(id => clearTimeout(id));
+  narration.scheduled = [];
+  narration.state = 'idle';
+  narrSyncUI();
+}
+
+function narrSave(){
+  if(!narration.audioBlob) return;
+  const a = document.createElement('a');
+  a.href = narration.audioUrl; a.download = 'narration.webm';
+  document.body.appendChild(a); a.click(); a.remove();
+  const json = JSON.stringify({ events: narration.storedEvents }, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const b = document.createElement('a');
+  b.href = url; b.download = 'narration.json';
+  document.body.appendChild(b); b.click(); b.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+function narrLoadFiles(files){
+  const audio = files.find(f => f.type.startsWith('audio/') || /\.(webm|mp3|wav|ogg|m4a)$/i.test(f.name));
+  const json = files.find(f => f.name.endsWith('.json'));
+  if(audio){
+    if(narration.audioUrl) URL.revokeObjectURL(narration.audioUrl);
+    narration.audioBlob = audio;
+    narration.audioUrl = URL.createObjectURL(audio);
+  }
+  if(json){
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const parsed = JSON.parse(r.result);
+        narration.storedEvents = parsed.events || [];
+        try{ localStorage.setItem('narr_events', JSON.stringify(narration.storedEvents)); } catch(e){}
+        narrSyncUI();
+      } catch(e){ alert('Bad JSON: ' + e.message); }
+    };
+    r.readAsText(json);
+  } else {
+    narrSyncUI();
+  }
+}
+
+(()=>{
+  const rec = document.getElementById('narrRec');
+  if(!rec) return;
+  document.getElementById('narrRec').onclick = narrStartRec;
+  document.getElementById('narrStop').onclick = narrStopRec;
+  document.getElementById('narrPlay').onclick = narrStartPlay;
+  document.getElementById('narrSave').onclick = narrSave;
+  document.getElementById('narrLoadBtn').onclick = ()=> document.getElementById('narrLoad').click();
+  document.getElementById('narrLoad').onchange = (e)=> narrLoadFiles(Array.from(e.target.files));
+  narrSyncUI();
+})();
 
 /* don't start animations until their slide is visible */
 </script>
