@@ -122,53 +122,63 @@ strong{font-weight:500;color:var(--ink)}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 @keyframes halo{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:.3}}
 
-/* ===== SLIDE 1 — diptychs ===== */
-.s1 .head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:3vh}
-.s1 .head h2{max-width:18ch}
-.s1 .head .right{max-width:38ch;text-align:right;color:var(--muted);font-style:italic;font-size:clamp(14px,1.05vw,17px);line-height:1.55}
-.diptychs{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
-.diptych{
-  display:grid;grid-template-columns:1fr 1fr;gap:14px;
-  opacity:0;transform:translateY(14px);
-  transition:opacity 1.6s ease, transform 1.6s ease;
+/* ===== SLIDE 1 — 3D carousel ===== */
+.s1{padding:0}
+.carousel3d-wrap{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  perspective:1100px;
+  perspective-origin:50% 46%;
 }
-.slide.active .diptych{opacity:1;transform:translateY(0)}
-.slide.active .diptych.d2{transition-delay:.9s}
-.pane{position:relative;border-radius:3px;overflow:hidden;background:var(--bg-deep);box-shadow:0 12px 30px -16px rgba(50,40,20,.45), 0 0 0 1px rgba(0,0,0,.04)}
-.pane img{display:block;width:100%;height:auto;filter:saturate(.92) contrast(1.02)}
-.pane .lbl{
-  position:absolute;left:10px;bottom:10px;
-  font-family:ui-sans-serif,system-ui,sans-serif;
-  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#f6f2e8;
-  background:rgba(20,18,14,.45);padding:5px 9px;border-radius:2px;backdrop-filter:blur(4px);
+.carousel3d{
+  width:260px;height:360px;
+  transform-style:preserve-3d;
+  animation:carousel3dSpin 30s linear infinite;
 }
-.pane .lbl.tr{left:auto;right:10px}
-.s1 .caption{
-  position:absolute;left:6vw;right:6vw;bottom:8vh;
-  display:flex;justify-content:space-between;gap:30px;
-  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+.s1:not(.active) .carousel3d{animation-play-state:paused}
+@keyframes carousel3dSpin{
+  from{transform:rotateX(-6deg) rotateY(0deg)}
+  to  {transform:rotateX(-6deg) rotateY(360deg)}
 }
-.s1 .caption .mid{color:var(--ink);letter-spacing:.04em;text-transform:none;font-style:italic;font-family:inherit;font-size:clamp(13px,1vw,16px)}
+.c-item{
+  position:absolute;inset:0;
+  transform:rotateY(calc(var(--i)*45deg)) translateZ(360px);
+  border-radius:4px;overflow:hidden;
+  box-shadow:0 24px 56px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.07);
+  backface-visibility:hidden;
+}
+.c-item img{
+  display:block;width:100%;height:100%;
+  object-fit:cover;
+  filter:saturate(.9) contrast(1.02);
+}
 
 /* ===== SLIDE 2 — reproduction ===== */
-.s2 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:2.4vh}
-.s2 .top h2{max-width:22ch}
-.s2 .top .lede{max-width:46ch;color:var(--ink-soft);font-style:italic;text-align:right;font-size:clamp(14px,1.05vw,17px);line-height:1.55}
-.modes{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vw;min-height:0}
+.s2 .top{display:flex;align-items:flex-end;gap:40px;margin-bottom:1.6vh}
+.s2 .top h2{max-width:42ch;font-size:clamp(20px,2.2vw,32px)}
+.s2-canvas-wrap{flex-shrink:0;margin-bottom:1.2vh}
+#s2main{display:block;width:100%;height:clamp(160px,26vh,240px);border-radius:5px;background:#c6dff2}
+#s2rbar{display:block;width:100%;height:58px;margin-top:5px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vw}
 .mode{
   display:flex;flex-direction:column;background:var(--cream);
   border:1px solid var(--line);border-radius:6px;overflow:hidden;
   box-shadow:0 14px 30px -22px rgba(50,40,20,.4);
+  opacity:0;transform:translateX(22px);
+  transition:opacity .65s ease, transform .65s ease;
 }
-.mode .modehd{padding:14px 18px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.35)}
+.mode.revealed{opacity:1;transform:translateX(0)}
+.mode .modehd{padding:12px 18px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.35)}
 .mode .num{font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
-.mode .modehd h3{margin-top:4px;font-size:clamp(18px,1.5vw,22px);color:var(--ink)}
-.mode .stage-c{position:relative;background:#f4f0e8;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
-.mode canvas{display:block;width:100%;height:100%}
-.mode .desc{padding:12px 18px 16px;font-size:13.5px;line-height:1.55;color:var(--ink-soft);border-top:1px solid var(--line);background:rgba(255,255,255,.35)}
-.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 18px;border-top:1px solid var(--line);font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;color:var(--muted)}
-.legend .leg{display:flex;align-items:center;gap:6px}
-.legend .swatch{width:10px;height:10px;border-radius:50%}
+.mode .modehd h3{margin-top:4px;font-size:clamp(15px,1.2vw,19px);color:var(--ink)}
+.mode .desc{padding:11px 18px 14px;font-size:13px;line-height:1.55;color:var(--ink-soft)}
+.s2-hint{
+  position:absolute;right:6vw;bottom:9vh;
+  font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+  opacity:.65;transition:opacity .4s ease, color .4s ease;pointer-events:none;
+}
+.s2-hint.done{opacity:.4}
 
 /* ===== SLIDE 4 — comparison table ===== */
 .s4 .compare-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:2vh}
@@ -479,44 +489,19 @@ body:not(.talk-visible) .scene-overlay .closing{opacity:0 !important}
     </div>
   </section>
 
-  <!-- SLIDE 1 — diptychs -->
+  <!-- SLIDE 1 — 3D carousel -->
   <section class="slide s1" data-slide="1">
-    <div class="head">
-      <div>
-        <div class="eyebrow"><span class="dot"></span>I · The Visual Rhyme</div>
-        <h2 style="margin-top:16px">A colony, from above.<br>A settlement, from above.</h2>
+    <div class="carousel3d-wrap">
+      <div class="carousel3d">
+        <div class="c-item" style="--i:0"><img src="resources/part1/image.jpg"      alt="Lichen colony close-up"></div>
+        <div class="c-item" style="--i:1"><img src="resources/part1/image (1).jpg"  alt="Satellite view of land"></div>
+        <div class="c-item" style="--i:2"><img src="resources/part1/image (2).jpg"  alt="Lichen close-up, second"></div>
+        <div class="c-item" style="--i:3"><img src="resources/part1/image (3).jpg"  alt="Settlement pattern"></div>
+        <div class="c-item" style="--i:4"><img src="resources/part1/image.jpg"      alt="Lichen colony close-up"></div>
+        <div class="c-item" style="--i:5"><img src="resources/part1/image (1).jpg"  alt="Satellite view of land"></div>
+        <div class="c-item" style="--i:6"><img src="resources/part1/image (2).jpg"  alt="Lichen close-up, second"></div>
+        <div class="c-item" style="--i:7"><img src="resources/part1/image (3).jpg"  alt="Settlement pattern"></div>
       </div>
-      <div class="right">Two images. One is a square centimeter of rock, the other a hundred kilometers of land. Look at them long enough and they refuse to stay apart.</div>
-    </div>
-
-    <div class="diptychs">
-      <div class="diptych d1">
-        <div class="pane">
-          <img src="resources/part1/image.jpg" alt="Lichen colony close-up">
-          <div class="lbl">Lichen · ~5 cm</div>
-        </div>
-        <div class="pane">
-          <img src="resources/part1/image (1).jpg" alt="Satellite view of land">
-          <div class="lbl tr">Satellite · ~120 km</div>
-        </div>
-      </div>
-
-      <div class="diptych d2">
-        <div class="pane">
-          <img src="resources/part1/image (2).jpg" alt="Lichen close-up, second">
-          <div class="lbl">Lichen · ~8 cm</div>
-        </div>
-        <div class="pane">
-          <img src="resources/part1/image (3).jpg" alt="Satellite view of settlement">
-          <div class="lbl tr">Settlement · ~80 km</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="caption">
-      <span>Scale · zoomed apart by ~10⁶</span>
-      <span class="mid">the architecture of relationship, surfacing as form</span>
-      <span>Pause. Look again.</span>
     </div>
   </section>
 
@@ -525,54 +510,41 @@ body:not(.talk-visible) .scene-overlay .closing{opacity:0 !important}
     <div class="top">
       <div>
         <div class="eyebrow"><span class="dot"></span>II · How a Lichen Spreads</div>
-        <h2 style="margin-top:16px">Three bets on how to carry a relationship across changing terrain.</h2>
+        <h2 style="margin-top:12px">Three bets on how to carry a relationship across changing terrain.</h2>
       </div>
-      <div class="lede">A lichen is not one organism but a 400-million-year-old partnership — a fungus and an alga. To reproduce, it has to decide: do the partners travel together, or do they part ways and hope to meet again?</div>
+    </div>
+
+    <div class="s2-canvas-wrap">
+      <canvas id="s2main"></canvas>
+      <canvas id="s2rbar"></canvas>
     </div>
 
     <div class="modes">
       <article class="mode">
         <div class="modehd">
-          <div class="num">Mode 01</div>
-          <h3>Soredia — bundles of both</h3>
+          <div class="num">Mode 01 · short range</div>
+          <h3>Isidia — solid capsule</h3>
         </div>
-        <div class="stage-c"><canvas id="c0"></canvas></div>
-        <div class="legend">
-          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Algae</div>
-          <div class="leg"><span class="swatch" style="background:#c47a20"></span>Fungus</div>
-          <div class="leg"><span class="swatch" style="background:#8a6fc4"></span>Soredium (both)</div>
-        </div>
-        <div class="desc"><strong>Both partners travel together.</strong> Each soredium is a ready-made bundle — algal cells wrapped in fungal threads. Lands anywhere, grows immediately.</div>
+        <div class="desc"><strong>Both partners travel together</strong> as a layered peg — fungal cortex wrapped around an algal core. Heavy; lands within metres of the parent.</div>
       </article>
 
       <article class="mode">
         <div class="modehd">
-          <div class="num">Mode 02</div>
-          <h3>Isidia — broken-off branches</h3>
+          <div class="num">Mode 02 · medium range</div>
+          <h3>Soredia — loose bundle</h3>
         </div>
-        <div class="stage-c"><canvas id="c1"></canvas></div>
-        <div class="legend">
-          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Algae</div>
-          <div class="leg"><span class="swatch" style="background:#c47a20"></span>Fungus</div>
-          <div class="leg"><span class="swatch" style="background:#2a8a6a"></span>Isidium (both)</div>
-        </div>
-        <div class="desc"><strong>Both partners travel together.</strong> A coral-like outgrowth carrying a full cross-section of the lichen. Heavier than soredia — moves shorter distances, but identical to the parent.</div>
+        <div class="desc"><strong>Both partners travel together</strong> as a powdery cluster — hyphae and algal cells mixed freely. Lighter than isidia; wind carries them metres to hundreds of kilometres.</div>
       </article>
 
       <article class="mode">
         <div class="modehd">
-          <div class="num">Mode 03</div>
+          <div class="num">Mode 03 · long range</div>
           <h3>Ascospores — fungus alone</h3>
         </div>
-        <div class="stage-c"><canvas id="c2"></canvas></div>
-        <div class="legend">
-          <div class="leg"><span class="swatch" style="background:#3a78c0"></span>Spore (fungus only)</div>
-          <div class="leg"><span class="swatch" style="background:#5a9e28"></span>Free alga</div>
-          <div class="leg"><span class="swatch" style="background:#d84444"></span>Encounter</div>
-        </div>
-        <div class="desc"><strong>Only the fungus disperses.</strong> Ascospores carry no algae and must <em>find</em> a compatible partner already living in the new place. Risky — no guarantees.</div>
+        <div class="desc"><strong>Only the fungus disperses.</strong> Ascospores carry no algae and must <em>find</em> a compatible partner already living in the new place. Travels furthest — but risky.</div>
       </article>
     </div>
+    <div class="s2-hint" id="s2hint">→ first strategy</div>
   </section>
 
   <!-- SLIDE 3 — globe: Three Mobilities -->
@@ -690,6 +662,7 @@ body:not(.talk-visible) .scene-overlay .closing{opacity:0 !important}
 const slides = document.querySelectorAll('.slide');
 const N = slides.length;
 let cur = 0;
+let modeStep = 0;
 let auto = false;
 let autoTimer = null;
 const SLIDE_MS = [9000, 14000, 16000, 75000, 30000]; // s3 hosts three sub-scenes; s4 is the comparison loop
@@ -712,7 +685,11 @@ function go(i){
   document.querySelectorAll('.dotbtn').forEach((d,j)=>d.classList.toggle('active',j===cur));
   stopAnims();
   globeStop();
-  if(cur===2) startAnims();
+  if(cur===2){
+    modeStep=0;
+    document.querySelectorAll('.s2 .mode').forEach(m=>m.classList.remove('revealed'));
+    setTimeout(()=>{ initS2Main(); drawS2Rangebar(); modeReveal(1); }, 120);
+  }
   if(cur===3){ subScene='A'; globeStart(3); }
   if(cur===4) startCompare();
   const np = document.getElementById('narrPanel');
@@ -721,6 +698,7 @@ function go(i){
 }
 function next(){
   if(narration && narration.state === 'playing') return; // ignore manual nav during playback
+  if(cur===2 && modeStep<3){ modeReveal(modeStep+1); return; }
   if(cur===3){
     if(globe.scene && globe.scene.advance && globe.scene.advance()){
       narrCueRecord('advance');
@@ -732,6 +710,7 @@ function next(){
 }
 function prev(){
   if(narration && narration.state === 'playing') return;
+  if(cur===2 && modeStep>1){ modeReveal(modeStep-1); return; }
   if(cur===3 && subScenePrev()) return;
   go(cur-1);
 }
@@ -768,7 +747,12 @@ const SPR='#3a78c0', SPRL='#7aaae0';
 const MEET='#d84444';
 
 const animTimers={};
-function stopAnims(){Object.values(animTimers).forEach(t=>clearInterval(t));for(const k in animTimers)delete animTimers[k]}
+let s2MainTimer=null;
+function stopAnims(){
+  Object.values(animTimers).forEach(t=>clearInterval(t));
+  for(const k in animTimers)delete animTimers[k];
+  if(s2MainTimer){clearInterval(s2MainTimer);s2MainTimer=null;}
+}
 
 function sizeCanvas(cv){
   const r=cv.parentElement.getBoundingClientRect();
@@ -947,7 +931,244 @@ function animAscospore(canvasId='c2', timerKey='s2'){
   },33);
 }
 
-function startAnims(){stopAnims();animSoredia();animIsidia();animAscospore()}
+/* ========== slide-2 unified animation (lichen_reproduction_partners) ========== */
+const IC='#1e8a68', SC='#7b5ec4', AC='#3a78c0';
+const ALGC='#4e9620', FUNC='#c47820';
+
+function initS2Main(){
+  if(s2MainTimer) clearInterval(s2MainTimer);
+  const cv=document.getElementById('s2main');
+  if(!cv) return;
+  const rect=cv.getBoundingClientRect();
+  const W=cv.width=Math.round(rect.width)||600;
+  const H=cv.height=Math.round(rect.height)||220;
+  const ctx=cv.getContext('2d');
+  const gY=H*0.71, lX=76, lY=gY-22;
+  let particles=[], settled=[], frame=0;
+
+  function drawBg(){
+    ctx.fillStyle='#c6dff2'; ctx.fillRect(0,0,W,gY);
+    ctx.fillStyle='#8aba40'; ctx.fillRect(0,gY,W,H-gY);
+    ctx.fillStyle='#6aa028'; ctx.fillRect(0,gY+5,W,4);
+  }
+  function drawSubstrate(){
+    ctx.fillStyle='#9a7858';
+    ctx.beginPath();ctx.roundRect(16,gY-40,82,52,7);ctx.fill();
+    [[20,gY-46,22,24],[38,gY-50,22,26],[56,gY-46,20,24],[72,gY-44,20,22]].forEach(([x,y,w,h])=>{
+      ctx.fillStyle='#7abe38';ctx.beginPath();ctx.roundRect(x,y,w,h,5);ctx.fill();
+      ctx.fillStyle='#5aaa20';ctx.beginPath();ctx.roundRect(x+2,y+4,w-4,h-8,3);ctx.fill();
+    });
+    // isidia pegs — revealed at mode 1
+    if(modeStep>=1){ for(let k=0;k<5;k++){
+      const ix=22+k*13;
+      ctx.fillStyle=FUNC;ctx.beginPath();ctx.roundRect(ix-1,gY-59,7,15,3);ctx.fill();
+      ctx.fillStyle=ALGC;ctx.beginPath();ctx.roundRect(ix+0.5,gY-57,4,11,2);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.18)';ctx.beginPath();ctx.roundRect(ix+1,gY-56,2,4,1);ctx.fill();
+    }}
+    // soredia cups — revealed at mode 2
+    if(modeStep>=2){ [30,46,62].forEach(sx=>{
+      ctx.fillStyle=SC;ctx.beginPath();ctx.arc(sx,gY-46,5.5,Math.PI,0);ctx.fill();
+      [[-3.5,-2.5,ALGC,2],[-1,-3.5,FUNC,1.6],[1.5,-2,ALGC,1.8],[3,-3,FUNC,1.5],[0,-1.5,ALGC,1.4],[-2,-0.5,FUNC,1.2],[2.5,-0.8,ALGC,1.5]].forEach(([dx,dy,c,r])=>{
+        ctx.fillStyle=c;ctx.beginPath();ctx.arc(sx+dx,gY-49+dy,r,0,Math.PI*2);ctx.fill();
+      });
+    });}
+    // apothecia (ascospore source) — revealed at mode 3
+    if(modeStep>=3){ [42,64].forEach(ax=>{
+      ctx.fillStyle='#7a3818';ctx.beginPath();ctx.ellipse(ax,gY-48,7,4.5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#b05030';ctx.beginPath();ctx.ellipse(ax,gY-49,4.5,2.5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=AC;ctx.beginPath();ctx.arc(ax,gY-54,2,0,Math.PI*2);ctx.fill();
+    });}
+    ctx.font='10px ui-sans-serif,sans-serif';ctx.fillStyle='#555';ctx.textAlign='center';
+    ctx.fillText('source thallus',57,gY+14);
+  }
+  function drawGuides(){
+    ctx.save();ctx.setLineDash([4,5]);ctx.lineWidth=0.9;
+    if(modeStep>=1){ctx.strokeStyle='rgba(30,138,104,0.28)';ctx.beginPath();ctx.moveTo(lX,lY);ctx.quadraticCurveTo(lX+28,lY-38,lX+72,gY);ctx.stroke();}
+    if(modeStep>=2){ctx.strokeStyle='rgba(123,94,196,0.28)';ctx.beginPath();ctx.moveTo(lX,lY);ctx.quadraticCurveTo(lX+110,lY-105,Math.min(lX+290,W*0.68),gY);ctx.stroke();}
+    if(modeStep>=3){ctx.strokeStyle='rgba(58,120,192,0.28)';ctx.beginPath();ctx.moveTo(lX,lY);ctx.quadraticCurveTo(lX+210,lY-155,W+40,gY);ctx.stroke();}
+    ctx.restore();
+  }
+  function drawZones(){
+    const isiEnd=lX+88, sorEnd=Math.min(lX+315,W-105);
+    ctx.save();ctx.setLineDash([3,4]);ctx.lineWidth=0.5;
+    if(modeStep>=1){ctx.fillStyle='rgba(30,138,104,0.09)';ctx.fillRect(lX+12,gY,isiEnd-(lX+12),H-gY);}
+    if(modeStep>=2){
+      ctx.fillStyle='rgba(123,94,196,0.09)';ctx.fillRect(isiEnd,gY,sorEnd-isiEnd,H-gY);
+      ctx.strokeStyle='rgba(0,0,0,0.14)';ctx.beginPath();ctx.moveTo(isiEnd,gY);ctx.lineTo(isiEnd,H);ctx.stroke();
+    }
+    if(modeStep>=3){
+      ctx.fillStyle='rgba(58,120,192,0.09)';ctx.fillRect(sorEnd,gY,W-sorEnd,H-gY);
+      ctx.strokeStyle='rgba(0,0,0,0.14)';ctx.beginPath();ctx.moveTo(sorEnd,gY);ctx.lineTo(sorEnd,H);ctx.stroke();
+    }
+    ctx.restore();
+    ctx.font='11px ui-sans-serif,sans-serif';ctx.textAlign='center';
+    if(modeStep>=1){ctx.fillStyle='#0d6650';const iz=(lX+12+isiEnd)/2;ctx.fillText('isidia',iz,gY+14);ctx.fillText('< 1 m',iz,gY+27);}
+    if(modeStep>=2&&sorEnd-isiEnd>75){ctx.fillStyle='#4a2890';const sz=(isiEnd+sorEnd)/2;ctx.fillText('soredia',sz,gY+14);ctx.fillText('m – 100 km',sz,gY+27);}
+    if(modeStep>=3){
+      ctx.fillStyle='#185FA5';const az=(sorEnd+W)/2;ctx.fillText('ascospores',az,gY+14);ctx.fillText('km – 1000+ km',az,gY+27);
+      ctx.font='14px ui-sans-serif,sans-serif';ctx.textAlign='right';ctx.fillText('→→',W-6,gY-24);
+    }
+  }
+  function spawnP(){
+    // only spawn types that have been revealed (0=isidia, 1=soredia, 2=ascospores)
+    const avail=[];
+    if(modeStep>=1) avail.push(0);
+    if(modeStep>=2) avail.push(1);
+    if(modeStep>=3) avail.push(2);
+    if(!avail.length) return;
+    const type=avail[Math.floor(Math.random()*avail.length)];
+    const jx=(Math.random()-.5)*14, jy=(Math.random()-.5)*6;
+    let x1,arcH,dur;
+    if(type===0){x1=lX+45+Math.random()*40;arcH=28+Math.random()*18;dur=52+Math.floor(Math.random()*16);}
+    else if(type===1){x1=lX+110+Math.random()*Math.min(190,W*0.38);arcH=80+Math.random()*38;dur=78+Math.floor(Math.random()*24);}
+    else{x1=lX+W*0.5+Math.random()*W*0.6;arcH=130+Math.random()*48;dur=98+Math.floor(Math.random()*28);}
+    particles.push({type,x0:lX+jx,y0:lY+jy,x1,y1:gY,arcH,t:0,dt:1/dur,life:1,landed:false,gone:false,spin:Math.random()*Math.PI*2,dsp:(Math.random()-.5)*0.08});
+  }
+  function arcXY(p){
+    const t=Math.min(p.t,1);
+    return{x:p.x0+t*(p.x1-p.x0),y:(p.y0*(1-t)+p.y1*t)-p.arcH*4*t*(1-t)};
+  }
+  function drawP(p){
+    const{x,y}=arcXY(p);
+    if(x>W+8||y<-10) return;
+    ctx.save();ctx.globalAlpha=Math.min(p.life,0.92);
+    if(p.type===0){
+      const rot=p.spin+p.t*5;
+      ctx.translate(x,y);ctx.rotate(rot);
+      ctx.fillStyle=FUNC;ctx.beginPath();ctx.roundRect(-5,-8,10,16,5);ctx.fill();
+      ctx.fillStyle=ALGC;ctx.beginPath();ctx.roundRect(-3,-6,6,12,3.5);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.22)';ctx.beginPath();ctx.roundRect(-2,-5,3,6,2);ctx.fill();
+      ctx.rotate(-rot);ctx.translate(-x,-y);
+      ctx.font='bold 8px ui-sans-serif,sans-serif';ctx.fillStyle=IC;ctx.textAlign='left';ctx.fillText('F+A',x+11,y+3);
+    } else if(p.type===1){
+      const wobble=Math.sin(p.t*18)*1.2;
+      [[-4,-3,ALGC,2.2],[0,-4,FUNC,1.8],[3.5,-2,ALGC,2.0],[-3,1,FUNC,1.6],[2.5,2,ALGC,2.1],[0,0.5,ALGC,1.5],[-1.5,-1,FUNC,1.4],[4,0,FUNC,1.3]].forEach(([dx,dy,c,r])=>{
+        ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+dx+wobble*0.3,y+dy,r,0,Math.PI*2);ctx.fill();
+      });
+      ctx.strokeStyle=FUNC;ctx.lineWidth=0.9;
+      [[-6,-4],[-5,4],[6,-2],[5,5],[-2,-6]].forEach(([ex,ey])=>{
+        ctx.beginPath();ctx.moveTo(x+ex*0.4,y+ey*0.4);ctx.lineTo(x+ex,y+ey);ctx.stroke();
+      });
+      ctx.font='bold 8px ui-sans-serif,sans-serif';ctx.fillStyle=SC;ctx.textAlign='left';ctx.fillText('F+A',x+9,y+3);
+    } else {
+      ctx.fillStyle=AC;ctx.beginPath();ctx.ellipse(x,y,4.5,3,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=0.8;ctx.beginPath();ctx.ellipse(x,y,4.5,3,0,0,Math.PI*2);ctx.stroke();
+      ctx.font='bold 8px ui-sans-serif,sans-serif';ctx.fillStyle=AC;ctx.textAlign='left';ctx.fillText('F',x+7,y+3);
+    }
+    ctx.restore();
+  }
+  function drawLanded(s){
+    ctx.save();
+    const cols=[IC,SC,AC];
+    if(s.type===2){
+      if(s.age<50){
+        ctx.globalAlpha=Math.min(s.age/20,0.85);
+        ctx.strokeStyle=FUNC;ctx.lineWidth=1.2;
+        for(let i=0;i<4;i++){
+          const a=(i/4)*Math.PI*2+(s.age*0.06);
+          ctx.beginPath();ctx.moveTo(s.x,gY-3);ctx.lineTo(s.x+Math.cos(a)*(6+Math.sin(s.age*0.1+i)*2),gY-3+Math.sin(a)*(6+Math.sin(s.age*0.1+i)*2));ctx.stroke();
+        }
+        ctx.fillStyle=FUNC;ctx.beginPath();ctx.arc(s.x,gY-3,2.5,0,Math.PI*2);ctx.fill();
+        ctx.font='9px ui-sans-serif,sans-serif';ctx.fillStyle=AC;ctx.textAlign='center';ctx.fillText('needs alga…',s.x,gY-13);
+      } else {
+        const p2=Math.min((s.age-50)/55,1);
+        ctx.globalAlpha=p2*0.9;
+        ctx.fillStyle=FUNC;ctx.beginPath();ctx.ellipse(s.x,gY-4,8*p2,5*p2,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=ALGC;ctx.beginPath();ctx.ellipse(s.x-1,gY-5,4.5*p2,3*p2,0,0,Math.PI*2);ctx.fill();
+        if(p2>0.4){ctx.font='9px ui-sans-serif,sans-serif';ctx.fillStyle=AC;ctx.textAlign='center';ctx.fillText('alga found ✓',s.x,gY-13);}
+        if(p2>0.75){ctx.font='9px ui-sans-serif,sans-serif';ctx.fillStyle=ALGC;ctx.fillText('new lichen!',s.x,gY-23);}
+      }
+    } else {
+      const prog=Math.min(s.age/55,1);
+      ctx.globalAlpha=prog*0.88;
+      ctx.fillStyle=cols[s.type];ctx.beginPath();ctx.ellipse(s.x,gY-4,7*prog,4.5*prog,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=ALGC;ctx.beginPath();ctx.ellipse(s.x-1,gY-5,4*prog,2.8*prog,0,0,Math.PI*2);ctx.fill();
+      if(prog>0.5){ctx.font='9px ui-sans-serif,sans-serif';ctx.fillStyle=cols[s.type];ctx.textAlign='center';ctx.fillText('arrived intact',s.x,gY-13);}
+      if(prog>0.8){ctx.font='9px ui-sans-serif,sans-serif';ctx.fillStyle=ALGC;ctx.fillText('new lichen!',s.x,gY-23);}
+    }
+    ctx.restore();
+  }
+  s2MainTimer=setInterval(()=>{
+    ctx.clearRect(0,0,W,H);
+    drawBg();drawGuides();drawSubstrate();drawZones();
+    if(frame%40===0&&particles.length<(modeStep>=3?22:14)) spawnP();
+    particles=particles.filter(p=>p.life>0&&!p.gone);
+    particles.forEach(p=>{
+      p.t+=p.dt;
+      if(p.t>=1&&!p.landed){
+        p.landed=true;
+        const{x}=arcXY(p);
+        if(x<W-5) settled.push({type:p.type,x,age:0}); else p.gone=true;
+      }
+      if(p.landed) p.life-=0.1;
+      drawP(p);
+    });
+    settled=settled.filter(s=>s.age<(s.type===2?175:165));
+    settled.forEach(s=>{s.age++;drawLanded(s);});
+    frame++;if(frame>700){frame=0;particles=[];settled=[];}
+  },33);
+}
+
+function drawS2Rangebar(){
+  const cv=document.getElementById('s2rbar');
+  if(!cv) return;
+  const W=cv.width=cv.offsetWidth, H=58;
+  cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const bx0=42,bx1=W-28,bW=bx1-bx0,bY=22,bH=10;
+  function lx(m){return bx0+(Math.log10(m)-(-2))/(9)*bW;}
+  ctx.fillStyle='#ddd';ctx.beginPath();ctx.roundRect(bx0,bY,bW,bH,3);ctx.fill();
+  [[IC,0.01,1],[SC,1,1e5],[AC,1e4,1e7]].forEach(([c,m0,m1],i)=>{
+    const active=(i===0&&modeStep>=1)||(i===1&&modeStep>=2)||(i===2&&modeStep>=3);
+    ctx.globalAlpha=active?(i===2?0.82:1):0.18;ctx.fillStyle=c;
+    ctx.beginPath();ctx.roundRect(lx(m0),bY,lx(m1)-lx(m0),bH,2);ctx.fill();ctx.globalAlpha=1;
+  });
+  ctx.fillStyle=AC;ctx.font='12px ui-sans-serif,sans-serif';ctx.textAlign='left';ctx.fillText('→',bx1+3,bY+9);
+  [[0.01,'1 cm'],[1,'1 m'],[1e3,'1 km'],[1e5,'100 km'],[1e7,'10,000 km']].forEach(([m,l])=>{
+    const x=lx(m);ctx.strokeStyle='#aaa';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(x,bY+bH);ctx.lineTo(x,bY+bH+4);ctx.stroke();
+    ctx.font='10px ui-sans-serif,sans-serif';ctx.textAlign='center';ctx.fillStyle='#666';ctx.fillText(l,x,bY+bH+14);
+  });
+  let lx_=bx0;
+  [[IC,'isidia F+A'],[SC,'soredia F+A'],[AC,'ascospores F']].forEach(([c,l],i)=>{
+    const active=(i===0&&modeStep>=1)||(i===1&&modeStep>=2)||(i===2&&modeStep>=3);
+    ctx.globalAlpha=active?1:0.22;
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(lx_+5,bY-7,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#444';ctx.font='10px ui-sans-serif,sans-serif';ctx.textAlign='left';ctx.fillText(l,lx_+13,bY-3);
+    ctx.globalAlpha=1;lx_+=80;
+  });
+  ctx.textAlign='right';ctx.fillStyle='#aaa';ctx.font='9px ui-sans-serif,sans-serif';ctx.fillText('log scale',bx1,bY-3);
+}
+
+function startAnims(){
+  stopAnims();
+  initS2Main();
+  drawS2Rangebar();
+}
+function modeReveal(n){
+  modeStep = n;
+  document.querySelectorAll('.s2 .mode').forEach((m,i)=>{
+    if(i<n) m.classList.add('revealed'); else m.classList.remove('revealed');
+  });
+  // restart animation so particles from removed types clear out
+  if(s2MainTimer){clearInterval(s2MainTimer);s2MainTimer=null;}
+  initS2Main();
+  drawS2Rangebar();
+  updateModeHint();
+  if(auto){ clearTimeout(autoTimer); autoTimer=setTimeout(()=>{if(auto)next();}, n<3?7000:SLIDE_MS[2]); }
+}
+function updateModeHint(){
+  const el=document.getElementById('s2hint'); if(!el) return;
+  const labels=['first','second','third'];
+  if(modeStep<3){
+    el.textContent='→ '+labels[modeStep]+' strategy';
+    el.classList.remove('done');
+  } else {
+    el.textContent='→ continue';
+    el.classList.add('done');
+  }
+}
 
 /* ============================================================
    ========== Mini-globe animations (Slide 4 comparison) =====
